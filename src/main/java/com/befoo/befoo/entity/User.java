@@ -1,11 +1,13 @@
 package com.befoo.befoo.entity;
 
+import com.befoo.befoo.entity.enums.Allergy;
+import com.befoo.befoo.entity.enums.HealthCondition;
 import com.befoo.befoo.global.entity.BaseTime;
 import de.huxhorn.sulky.ulid.ULID;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @Entity
 @Getter
@@ -25,4 +27,14 @@ public class User extends BaseTime {
     private String name;
 
     private String image;
+    
+    @ElementCollection
+    @CollectionTable(name = "user_health_conditions", joinColumns = @JoinColumn(name = "user_id"))
+    @Enumerated(EnumType.STRING)
+    private List<HealthCondition> healthConditions;
+    
+    @ElementCollection
+    @CollectionTable(name = "user_allergies", joinColumns = @JoinColumn(name = "user_id"))
+    @Enumerated(EnumType.STRING)
+    private List<Allergy> allergies;
 }
