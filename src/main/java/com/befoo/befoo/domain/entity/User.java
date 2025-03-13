@@ -1,7 +1,8 @@
-package com.befoo.befoo.entity;
+package com.befoo.befoo.domain.entity;
 
-import com.befoo.befoo.entity.enums.Allergy;
-import com.befoo.befoo.entity.enums.HealthCondition;
+import com.befoo.befoo.domain.entity.enums.Allergy;
+import com.befoo.befoo.domain.entity.enums.HealthCondition;
+import com.befoo.befoo.domain.entity.enums.Role;
 import com.befoo.befoo.global.entity.BaseTime;
 import de.huxhorn.sulky.ulid.ULID;
 import jakarta.persistence.*;
@@ -23,6 +24,8 @@ public class User extends BaseTime {
     private String email;
 
     private String password;
+
+    private Role role;
 
     private String name;
 

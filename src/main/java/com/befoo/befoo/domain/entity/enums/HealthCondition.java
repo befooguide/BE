@@ -1,4 +1,4 @@
-package com.befoo.befoo.entity.enums;
+package com.befoo.befoo.domain.entity.enums;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;

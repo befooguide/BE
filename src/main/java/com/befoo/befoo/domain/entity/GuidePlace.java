@@ -1,4 +1,4 @@
-package com.befoo.befoo.entity;
+package com.befoo.befoo.domain.entity;
 
 import com.befoo.befoo.global.entity.BaseTime;
 import de.huxhorn.sulky.ulid.ULID;
@@ -10,17 +10,17 @@ import lombok.*;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class BookmarkedPlace extends BaseTime {
+public class GuidePlace extends BaseTime {
     @Id
-    @Column(name = "bookmarked_place_id")
+    @Column(name = "guide_place_id")
     @Builder.Default
     private final String id = new ULID().nextULID();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @JoinColumn(name = "guide_id", nullable = false)
+    private Guide guide;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "place_id", nullable = false)
-    private Place place;
+    @JoinColumn(name = "review_id", nullable = false)
+    private Review review;
 } 

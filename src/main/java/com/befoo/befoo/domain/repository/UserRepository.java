@@ -1,6 +1,6 @@
-package com.befoo.befoo.repository;
+package com.befoo.befoo.domain.repository;
 
-import com.befoo.befoo.entity.User;
+import com.befoo.befoo.domain.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

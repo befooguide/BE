@@ -1,4 +1,4 @@
-package com.befoo.befoo.entity;
+package com.befoo.befoo.domain.entity;
 
 import com.befoo.befoo.global.entity.BaseTime;
 import de.huxhorn.sulky.ulid.ULID;
