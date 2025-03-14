@@ -27,6 +27,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 	implementation 'io.jsonwebtoken:jjwt:0.12.3'
 	implementation 'de.huxhorn.sulky:de.huxhorn.sulky.ulid:8.3.0'
 	compileOnly 'org.projectlombok:lombok'

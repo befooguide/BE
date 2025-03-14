@@ -1,16 +1,21 @@
 package com.befoo.befoo.domain.dto;
 
-import com.befoo.befoo.domain.entity.User;
-import com.befoo.befoo.domain.entity.enums.Role;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 
-public record CustomUserDetails(User user) implements UserDetails {
-    public String getId() {
-        return user.getId();
+@RequiredArgsConstructor
+public class CustomOAuth2User implements OAuth2User {
+
+    private final UserDto userDto;
+
+    @Override
+    public Map<String, Object> getAttributes() {
+        return null;
     }
 
     @Override
@@ -19,24 +24,19 @@ public record CustomUserDetails(User user) implements UserDetails {
         collection.add(new GrantedAuthority() {
             @Override
             public String getAuthority() {
-                return user.getRole().toString();
+                return userDto.getRole();
             }
         });
+
         return collection;
     }
 
     @Override
-    public String getPassword() {
-        return "";
+    public String getName() {
+        return userDto.getName();
     }
 
-    @Override
     public String getUsername() {
-        return user.getEmail();
+        return userDto.getUsername();
     }
-
-    public Role getRole() {
-        return user.getRole();
-    }
-
 }

@@ -14,8 +14,7 @@ public class UserManager {
 
     @Transactional(readOnly = true)
     public UserProfileResponse getProfile(User user) {
-        User currentUser = userService.getUser(user);
-        return UserProfileResponse.from(currentUser);
+        return UserProfileResponse.from(user);
     }
 
     @Transactional

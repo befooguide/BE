@@ -23,11 +23,13 @@ public class User extends BaseTime {
 
     private String email;
 
-    private String password;
+    private String username;
 
+    @Setter
+    private String nickname;
+
+    @Enumerated(EnumType.STRING)
     private Role role;
-
-    private String name;
 
     private String image;
     

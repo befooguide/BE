@@ -24,7 +24,7 @@ public class UserProfileResponse implements Response {
     public static UserProfileResponse from(User user) {
         return UserProfileResponse.builder()
                 .userId(user.getId())
-                .nickname(user.getName())
+                .nickname(user.getNickname())
                 .healthConditions(user.getHealthConditions() != null ? 
                         user.getHealthConditions().stream()
                         .map(HealthCondition::getDescription)
