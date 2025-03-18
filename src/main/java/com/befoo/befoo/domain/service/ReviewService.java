@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -58,6 +59,14 @@ public class ReviewService {
 
     public List<Review> findReviewsByPlaceId(String placeId) {
         return reviewRepository.findByPlaceId(placeId);
+    }
+
+    public List<Place> findRecommendedPlacesByUser(User user) {
+        return reviewRepository.findByUserAndRecommendTrue(user)
+                .stream()
+                .map(Review::getPlace)
+                .distinct()
+                .collect(Collectors.toList());
     }
 
     public Review findById(String reviewId) {
