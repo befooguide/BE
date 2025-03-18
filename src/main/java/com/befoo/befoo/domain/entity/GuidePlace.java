@@ -21,6 +21,6 @@ public class GuidePlace extends BaseTime {
     private Guide guide;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "review_id", nullable = false)
-    private Review review;
+    @JoinColumn(name = "place_id", nullable = false)
+    private Place place;
 } 

@@ -40,7 +40,7 @@ public class PlaceController {
         User user = customUserDetails.user();
         log.info("POST 평가 저장: user-{}, place-{}", user.getId(), placeId);
         ReviewResponse response = placeManager.createReview(placeId, user, request);
-        return ApiResponse.success(response, "평가 저장 성공");
+        return ApiResponse.created(response, "평가 저장 성공");
     }
 
     // 평가 수정

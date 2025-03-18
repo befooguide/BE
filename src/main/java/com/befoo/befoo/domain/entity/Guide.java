@@ -5,6 +5,9 @@ import de.huxhorn.sulky.ulid.ULID;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @Builder
@@ -20,7 +23,18 @@ public class Guide extends BaseTime {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false)
     private String description;
+
+    @OneToMany(mappedBy = "guide", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<GuidePlace> guidePlaces = new ArrayList<>();
+
+    public void update(String name, String description) {
+        this.name = name;
+        this.description = description;
+    }
 } 

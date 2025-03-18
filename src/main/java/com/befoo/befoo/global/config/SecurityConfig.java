@@ -62,6 +62,8 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/").permitAll()
+                        .requestMatchers("/api/guides").permitAll()  // 가이드 목록 조회
+                        .requestMatchers("/api/guides/{guideId}").permitAll()  // 가이드 상세 조회
                         .anyRequest().authenticated());
 
         //세션 설정 : STATELESS
