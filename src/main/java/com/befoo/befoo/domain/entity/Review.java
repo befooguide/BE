@@ -24,7 +24,7 @@ public class Review extends BaseTime {
     @JoinColumn(name = "place_id", nullable = false)
     private Place place;
 
-    private String receiptUrl;
+    private String receipt;
 
     private Integer taste;
 
@@ -39,4 +39,14 @@ public class Review extends BaseTime {
     private String comment;
 
     private Boolean recommend;
+
+    public void update(Integer taste, Integer menu, Integer nutrition,
+                      Integer health, Integer totalScore, String comment) {
+        this.taste = taste;
+        this.menu = menu;
+        this.nutrition = nutrition;
+        this.health = health;
+        this.totalScore = totalScore;
+        this.comment = comment;
+    }
 } 

@@ -27,6 +27,5 @@ public class Place extends BaseTime {
 
     private String description;
 
-    @Column(name = "photo_url")
-    private String photoUrl;
+    private String image;
 } 
