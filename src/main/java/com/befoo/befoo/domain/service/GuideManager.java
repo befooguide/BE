@@ -21,6 +21,7 @@ public class GuideManager {
     private final GuideService guideService;
     private final PlaceService placeService;
     private final ReviewService reviewService;
+    private final BookmarkedGuideService bookmarkedGuideService;
 
     // API: 가이드 생성
     @Transactional
@@ -30,7 +31,8 @@ public class GuideManager {
                 .collect(Collectors.toList());
         validatePlacesHaveUserReview(user, places);
         Guide guide = guideService.createGuide(user, request, places);
-        return GuideResponse.from(guide);
+        return GuideResponse.from(guide)
+                .withBookmarked(bookmarkedGuideService.isBookmarked(user, guide));
     }
 
     // API: 가이드 수정
@@ -45,7 +47,8 @@ public class GuideManager {
         validatePlacesHaveUserReview(user, places);
 
         Guide updatedGuide = guideService.updateGuide(guideId, request, places);
-        return GuideResponse.from(updatedGuide);
+        return GuideResponse.from(updatedGuide)
+                .withBookmarked(bookmarkedGuideService.isBookmarked(user, updatedGuide));
     }
 
     // API: 가이드 삭제
@@ -58,23 +61,62 @@ public class GuideManager {
 
     // API: 가이드 목록 조회
     @Transactional(readOnly = true)
-    public GuideListResponse getGuides() {
+    public GuideListResponse getGuides(User user) {
         List<Guide> guides = guideService.findAll();
-        return GuideListResponse.from(guides);
+        List<GuideResponse> guideResponses = guides.stream()
+                .map(guide -> GuideResponse.from(guide)
+                        .withBookmarked(bookmarkedGuideService.isBookmarked(user, guide)))
+                .collect(Collectors.toList());
+
+        return GuideListResponse.from(guideResponses);
     }
 
     // API: 가이드 상세 조회
     @Transactional(readOnly = true)
-    public GuideResponse getGuideDetail(String guideId) {
+    public GuideResponse getGuideDetail(String guideId, User user) {
         Guide guide = guideService.findById(guideId);
-        return GuideResponse.from(guide);
+        return GuideResponse.from(guide)
+                .withBookmarked(bookmarkedGuideService.isBookmarked(user, guide));
     }
 
     // API: 나만의 가이드 목록 조회
     @Transactional(readOnly = true)
     public GuideListResponse getMyGuides(User user) {
         List<Guide> guides = guideService.findByUser(user);
-        return GuideListResponse.from(guides);
+        List<GuideResponse> guideResponses = guides.stream()
+                .map(guide -> GuideResponse.from(guide)
+                        .withBookmarked(bookmarkedGuideService.isBookmarked(user, guide)))
+                .collect(Collectors.toList());
+
+        return GuideListResponse.from(guideResponses);
+    }
+
+    // API: 가이드 저장
+    @Transactional
+    public GuideResponse bookmarkGuide(String guideId, User user) {
+        Guide guide = guideService.findById(guideId);
+        bookmarkedGuideService.createBookmarkedGuide(user, guide);
+        return GuideResponse.from(guide)
+                .withBookmarked(true);
+    }
+
+    // API: 저장 가이드 목록 조회
+    @Transactional(readOnly = true)
+    public GuideListResponse getBookmarkedGuides(User user) {
+        List<Guide> guides = bookmarkedGuideService.findBookmarkedGuidesByUser(user);
+        List<GuideResponse> guideResponses = guides.stream()
+                .map(guide -> GuideResponse.from(guide)
+                        .withBookmarked(true))
+                .collect(Collectors.toList());
+
+        return GuideListResponse.from(guideResponses);
+    }
+
+    // API: 가이드 저장 취소
+    @Transactional
+    public void unbookmarkGuide(String guideId, User user) {
+        Guide guide = guideService.findById(guideId);
+        bookmarkedGuideService.deleteBookmarkedGuide(user, guide);
     }
 
     private void validatePlacesHaveUserReview(User user, List<Place> places) {

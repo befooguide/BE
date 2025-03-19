@@ -23,4 +23,11 @@ public class BookmarkedPlace extends BaseTime {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "place_id", nullable = false)
     private Place place;
+
+    public static BookmarkedPlace of(User user, Place place) {
+        return BookmarkedPlace.builder()
+                .user(user)
+                .place(place)
+                .build();
+    }
 } 

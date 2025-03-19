@@ -2,9 +2,7 @@ package com.befoo.befoo.domain.entity;
 
 import com.befoo.befoo.global.entity.BaseTime;
 import de.huxhorn.sulky.ulid.ULID;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
@@ -21,11 +19,14 @@ public class Place extends BaseTime {
     @Column(name = "kakaomap_id")
     private String kakaomapId;
 
+    @Column(nullable = false)
     private String name;
+
+    @Column(columnDefinition = "TEXT")
+    private String description;
 
     private String url;
 
-    private String description;
 
     private String image;
 } 

@@ -17,11 +17,11 @@ public class GuideException extends RuntimeException {
         return new GuideException(placeId, "리뷰를 작성하지 않은 장소는 가이드에 추가할 수 없습니다.");
     }
 
-    public static GuideException invalidStatus(String guideId) {
-        return new GuideException(guideId, "유효하지 않은 가이드 상태입니다.");
+    public static GuideException alreadyBookmarked(String guideId) {
+        return new GuideException(guideId, "이미 저장된 가이드입니다.");
     }
 
-    public static GuideException alreadyBooked(String guideId) {
-        return new GuideException(guideId, "이미 예약된 가이드입니다.");
+    public static GuideException notBookmarked(String guideId) {
+        return new GuideException(guideId, "저장되지 않은 가이드입니다.");
     }
 } 

@@ -2,11 +2,13 @@ package com.befoo.befoo.global.config;
 
 import com.befoo.befoo.domain.oauth2.CustomSuccessHandler;
 import com.befoo.befoo.domain.service.CustomOAuth2UserService;
+import com.befoo.befoo.global.constant.SecurityConstants;
 import com.befoo.befoo.global.jwt.JwtFilter;
 import com.befoo.befoo.global.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -53,7 +55,7 @@ public class SecurityConfig {
                 .oauth2Login((oauth2) -> oauth2
                         .authorizationEndpoint(endpoint -> 
                                 endpoint.baseUri("/api/login/kakao"))
-                        .userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig // /oauth2/authorization/kakao(default)
+                        .userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
                                 .userService(customOAuth2UserService))
                         .successHandler(customSuccessHandler)
                 );
@@ -61,9 +63,7 @@ public class SecurityConfig {
         //경로별 인가 작업
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/").permitAll()
-                        .requestMatchers("/api/guides").permitAll()  // 가이드 목록 조회
-                        .requestMatchers("/api/guides/{guideId}").permitAll()  // 가이드 상세 조회
+                        .requestMatchers(HttpMethod.GET, SecurityConstants.PUBLIC_URLS.toArray(new String[0])).permitAll()
                         .anyRequest().authenticated());
 
         //세션 설정 : STATELESS

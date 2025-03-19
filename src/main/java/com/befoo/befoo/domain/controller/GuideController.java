@@ -56,17 +56,22 @@ public class GuideController {
 
     // 가이드 목록 조회
     @GetMapping
-    public ApiResponse<GuideListResponse> getGuides() {
-        log.info("GET 가이드 목록 조회");
-        GuideListResponse response = guideManager.getGuides();
+    public ApiResponse<GuideListResponse> getGuides(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        User user = customUserDetails != null ? customUserDetails.user() : null;
+        log.info("GET 가이드 목록 조회: user-{}", user != null ? user.getId() : "anonymous");
+        GuideListResponse response = guideManager.getGuides(user);
         return ApiResponse.success(response, "가이드 목록 조회 성공");
     }
 
     // 가이드 상세 조회
     @GetMapping("/{guideId}")
-    public ApiResponse<GuideResponse> getGuideDetail(@PathVariable String guideId) {
-        log.info("GET 가이드 상세 조회: guide-{}", guideId);
-        GuideResponse response = guideManager.getGuideDetail(guideId);
+    public ApiResponse<GuideResponse> getGuideDetail(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @PathVariable String guideId) {
+        User user = customUserDetails != null ? customUserDetails.user() : null;
+        log.info("GET 가이드 상세 조회: user-{}, guide-{}", user != null ? user.getId() : "anonymous", guideId);
+        GuideResponse response = guideManager.getGuideDetail(guideId, user);
         return ApiResponse.success(response, "가이드 상세 조회 성공");
     }
 
@@ -78,5 +83,37 @@ public class GuideController {
         log.info("GET 나만의 가이드 목록 조회: user-{}", user.getId());
         GuideListResponse response = guideManager.getMyGuides(user);
         return ApiResponse.success(response, "나만의 가이드 목록 조회 성공");
+    }
+
+    // 가이드 저장
+    @PostMapping("/{guideId}/bookmarked")
+    public ApiResponse<Response> bookmarkGuide(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @PathVariable String guideId) {
+        User user = customUserDetails.user();
+        log.info("POST 가이드 저장: user-{}, guide-{}", user.getId(), guideId);
+        GuideResponse response = guideManager.bookmarkGuide(guideId, user);
+        return ApiResponse.created(response, "가이드 저장 성공");
+    }
+
+    // 저장 가이드 목록 조회
+    @GetMapping("/bookmarked")
+    public ApiResponse<GuideListResponse> getBookmarkedGuides(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        User user = customUserDetails.user();
+        log.info("GET 저장 가이드 목록 조회: user-{}", user.getId());
+        GuideListResponse response = guideManager.getBookmarkedGuides(user);
+        return ApiResponse.success(response, "저장 가이드 목록 조회 성공");
+    }
+
+    // 가이드 저장 취소
+    @DeleteMapping("/{guideId}/bookmarked")
+    public ApiResponse<Void> unbookmarkGuide(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @PathVariable String guideId) {
+        User user = customUserDetails.user();
+        log.info("DELETE 가이드 저장 취소: user-{}, guide-{}", user.getId(), guideId);
+        guideManager.unbookmarkGuide(guideId, user);
+        return ApiResponse.noContent("가이드 저장 취소 성공");
     }
 }
