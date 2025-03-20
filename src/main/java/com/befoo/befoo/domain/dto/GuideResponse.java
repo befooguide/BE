@@ -17,7 +17,7 @@ public class GuideResponse implements Response {
     private String guideId;
     private String name;
     private String description;
-    private String userNickname;
+    private String username;
     private boolean isBookmarked;
     private List<PlaceInfo> places;
 
@@ -30,7 +30,7 @@ public class GuideResponse implements Response {
                 .guideId(guide.getId())
                 .name(guide.getName())
                 .description(guide.getDescription())
-                .userNickname(guide.getUser().getNickname())
+                .username(guide.getUser().getUsername())
                 .isBookmarked(false)
                 .places(placeInfos)
                 .build();

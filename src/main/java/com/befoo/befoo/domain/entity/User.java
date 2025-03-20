@@ -1,5 +1,6 @@
 package com.befoo.befoo.domain.entity;
 
+import com.befoo.befoo.domain.dto.UserProfileRequest;
 import com.befoo.befoo.domain.entity.enums.Allergy;
 import com.befoo.befoo.domain.entity.enums.HealthCondition;
 import com.befoo.befoo.domain.entity.enums.Role;
@@ -23,10 +24,8 @@ public class User extends BaseTime {
 
     private String email;
 
+    @Column(unique = true)
     private String username;
-
-    @Setter
-    private String nickname;
 
     @Enumerated(EnumType.STRING)
     private Role role;
@@ -42,4 +41,10 @@ public class User extends BaseTime {
     @CollectionTable(name = "user_allergies", joinColumns = @JoinColumn(name = "user_id"))
     @Enumerated(EnumType.STRING)
     private List<Allergy> allergies;
+
+    public void updateProfile(UserProfileRequest request) {
+        this.username = request.getUsername();
+        this.healthConditions = request.getHealthConditions();
+        this.allergies = request.getAllergies();
+    }
 }

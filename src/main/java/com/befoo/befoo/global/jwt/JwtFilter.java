@@ -74,7 +74,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
         //userDto를 생성하여 값 set - 토큰에서 추출한 role 사용
         UserDto userDto = UserDto.builder()
-                .name(username)
+                .username(username)
                 .role(role)
                 .build();
 

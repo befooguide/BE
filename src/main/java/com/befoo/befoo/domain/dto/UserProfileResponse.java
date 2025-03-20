@@ -17,14 +17,14 @@ import java.util.stream.Collectors;
 @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class UserProfileResponse implements Response {
     private String userId;
-    private String nickname;
+    private String username;
     private List<String> healthConditions;
     private List<String> allergies;
 
     public static UserProfileResponse from(User user) {
         return UserProfileResponse.builder()
                 .userId(user.getId())
-                .nickname(user.getNickname())
+                .username(user.getUsername())
                 .healthConditions(user.getHealthConditions() != null ? 
                         user.getHealthConditions().stream()
                         .map(HealthCondition::getDescription)

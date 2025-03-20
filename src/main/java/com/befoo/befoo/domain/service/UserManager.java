@@ -1,6 +1,6 @@
 package com.befoo.befoo.domain.service;
 
-import com.befoo.befoo.domain.dto.UserProfileHealthRequest;
+import com.befoo.befoo.domain.dto.UserProfileRequest;
 import com.befoo.befoo.domain.dto.UserProfileResponse;
 import com.befoo.befoo.domain.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -18,8 +18,8 @@ public class UserManager {
     }
 
     @Transactional
-    public UserProfileResponse patchProfileHealth(User user, UserProfileHealthRequest request) {
-        User updatedUser = userService.updateHealthInfo(user, request.getHealthConditions(), request.getAllergies());
+    public UserProfileResponse putProfile(User user, UserProfileRequest request) {
+        User updatedUser = userService.updateProfile(user, request);
         return UserProfileResponse.from(updatedUser);
     }
 }
