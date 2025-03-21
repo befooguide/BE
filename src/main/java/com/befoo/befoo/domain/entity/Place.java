@@ -1,9 +1,12 @@
 package com.befoo.befoo.domain.entity;
 
 import com.befoo.befoo.global.entity.BaseTime;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.huxhorn.sulky.ulid.ULID;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @Entity
 @Getter
@@ -22,11 +25,13 @@ public class Place extends BaseTime {
     @Column(nullable = false)
     private String name;
 
-    @Column(columnDefinition = "TEXT")
     private String description;
 
     private String url;
 
-
     private String image;
+
+    @JsonIgnore
+    @OneToMany(fetch = FetchType.LAZY)
+    private List<Review> reviews;
 } 

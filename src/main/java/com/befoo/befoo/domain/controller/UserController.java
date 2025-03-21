@@ -40,4 +40,23 @@ public class UserController {
         return ApiResponse.success(response, "프로필 수정 성공");
     }
 
+    // 나만의 목록 조회
+    @GetMapping("/my-list")
+    public ApiResponse<Response> getMyList(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        User user = customUserDetails.user();
+        log.info("GET 나만의 목록 조회: {}", user.getId());
+        var response = userManager.getMyList(user);
+        return ApiResponse.success(response, "나만의 목록 조회 성공");
+    }
+
+    // 저장 목록 조회
+    @GetMapping("/bookmarked")
+    public ApiResponse<Response> getBookmarkedList(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        User user = customUserDetails.user();
+        log.info("GET 저장 목록 조회: {}", user.getId());
+        var response = userManager.getBookmarkedList(user);
+        return ApiResponse.success(response, "저장 목록 조회 성공");
+    }
 }

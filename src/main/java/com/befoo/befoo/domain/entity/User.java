@@ -22,10 +22,11 @@ public class User extends BaseTime {
     @Builder.Default
     private final String id = new ULID().nextULID();
 
-    private String email;
-
-    @Column(unique = true)
+    @Column(nullable = false, unique = true)
     private String username;
+
+    @Column(nullable = false)
+    private String email;
 
     @Enumerated(EnumType.STRING)
     private Role role;

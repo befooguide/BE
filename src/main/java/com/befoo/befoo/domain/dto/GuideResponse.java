@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,6 +21,7 @@ public class GuideResponse implements Response {
     private String username;
     private boolean isBookmarked;
     private List<PlaceInfo> places;
+    private LocalDateTime updatedAt;
 
     public static GuideResponse from(Guide guide) {
         List<PlaceInfo> placeInfos = guide.getGuidePlaces().stream()
@@ -33,6 +35,7 @@ public class GuideResponse implements Response {
                 .username(guide.getUser().getUsername())
                 .isBookmarked(false)
                 .places(placeInfos)
+                .updatedAt(guide.getUpdatedAt())
                 .build();
     }
 
