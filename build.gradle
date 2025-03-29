@@ -37,6 +37,10 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	
+	// SQLite 테스트 의존성
+	testRuntimeOnly 'org.xerial:sqlite-jdbc:3.45.2.0'
+	testRuntimeOnly 'org.hibernate.orm:hibernate-community-dialects:6.4.4.Final'
 }
 
 tasks.named('test') {
