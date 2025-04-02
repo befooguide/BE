@@ -5,6 +5,7 @@ import com.befoo.befoo.domain.dto.PlaceResponse;
 import com.befoo.befoo.domain.dto.ReviewListResponse;
 import com.befoo.befoo.domain.dto.ReviewRequest;
 import com.befoo.befoo.domain.dto.ReviewResponse;
+import com.befoo.befoo.domain.entity.BookmarkedPlace;
 import com.befoo.befoo.domain.entity.Place;
 import com.befoo.befoo.domain.entity.Review;
 import com.befoo.befoo.domain.entity.User;
@@ -29,7 +30,7 @@ public class PlaceManager {
         List<PlaceResponse> placeResponses = places.stream()
                 .map(place -> PlaceResponse.from(place)
                         .withBookmarked(bookmarkedPlaceService.isBookmarked(user, place)))
-                .collect(Collectors.toList());
+                .toList();
         return PlaceListResponse.from(placeResponses);
     }
 
@@ -87,12 +88,12 @@ public class PlaceManager {
     @Transactional(readOnly = true)
     public PlaceListResponse getMyBookmarkedPlaces(User user) {
         List<Place> places = bookmarkedPlaceService.getBookmarkedPlaces(user).stream()
-                .map(bookmarkedPlace -> bookmarkedPlace.getPlace())
-                .collect(Collectors.toList());
+                .map(BookmarkedPlace::getPlace)
+                .toList();
         List<PlaceResponse> placeResponses = places.stream()
                 .map(place -> PlaceResponse.from(place)
                         .withBookmarked(true))
-                .collect(Collectors.toList());
+                .toList();
         return PlaceListResponse.from(placeResponses);
     }
 

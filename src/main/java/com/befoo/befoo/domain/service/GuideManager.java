@@ -27,7 +27,7 @@ public class GuideManager {
     @Transactional
     public GuideResponse createGuide(User user, GuideRequest request) {
         List<Place> places = request.getPlaceIds().stream()
-                .map(placeId -> placeService.findById(placeId))
+                .map(placeService::findById)
                 .collect(Collectors.toList());
         validatePlacesHaveUserReview(user, places);
         Guide guide = guideService.createGuide(user, request, places);
@@ -42,7 +42,7 @@ public class GuideManager {
         guideService.validateGuideBelongsToUser(guide, user.getId());
 
         List<Place> places = request.getPlaceIds().stream()
-                .map(placeId -> placeService.findById(placeId))
+                .map(placeService::findById)
                 .collect(Collectors.toList());
         validatePlacesHaveUserReview(user, places);
 
@@ -86,7 +86,7 @@ public class GuideManager {
         List<GuideResponse> guideResponses = guides.stream()
                 .map(guide -> GuideResponse.from(guide)
                         .withBookmarked(bookmarkedGuideService.isBookmarked(user, guide)))
-                .collect(Collectors.toList());
+                .toList();
 
         return GuideListResponse.from(guideResponses);
     }
@@ -107,7 +107,7 @@ public class GuideManager {
         List<GuideResponse> guideResponses = guides.stream()
                 .map(guide -> GuideResponse.from(guide)
                         .withBookmarked(true))
-                .collect(Collectors.toList());
+                .toList();
 
         return GuideListResponse.from(guideResponses);
     }

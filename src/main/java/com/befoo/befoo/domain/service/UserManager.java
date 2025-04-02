@@ -1,6 +1,9 @@
 package com.befoo.befoo.domain.service;
 
 import com.befoo.befoo.domain.dto.*;
+import com.befoo.befoo.domain.entity.BookmarkedPlace;
+import com.befoo.befoo.domain.entity.Guide;
+import com.befoo.befoo.domain.entity.Place;
 import com.befoo.befoo.domain.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -9,14 +12,16 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class UserManager {
-    private final GuideManager guideManager;
-    private final PlaceManager placeManager;
     private final UserService userService;
+    private final GuideService guideService;
+    private final ReviewService reviewService;
+    private final BookmarkedGuideService bookmarkedGuideService;
+    private final BookmarkedPlaceService bookmarkedPlaceService;
+
     // API: 프로필 조회
     @Transactional(readOnly = true)
     public UserProfileResponse getProfile(User user) {
@@ -36,22 +41,30 @@ public class UserManager {
         List<MyListItem> myList = new ArrayList<>();
 
         // 가이드 목록 조회
-        GuideListResponse guideListResponse = guideManager.getMyGuides(user);
-        myList.addAll(guideListResponse.getGuides().stream()
+        List<Guide> guides = guideService.findByUser(user);
+        List<GuideResponse> guideResponses = guides.stream()
+                .map(guide -> GuideResponse.from(guide)
+                        .withBookmarked(bookmarkedGuideService.isBookmarked(user, guide)))
+                .toList();
+        myList.addAll(guideResponses.stream()
                 .map(guideResponse -> MyListItem.builder()
                         .contentType(ContentType.GUIDE)
                         .guideResponse(guideResponse)
                         .build())
-                .collect(Collectors.toList()));
+                .toList());
 
         // 추천 식당 목록 조회
-        PlaceListResponse placeListResponse = placeManager.getMyRecommendedPlaces(user);
-        myList.addAll(placeListResponse.getPlaces().stream()
+        List<Place> places = reviewService.findRecommendedPlacesByUser(user);
+        List<PlaceResponse> placeResponses = places.stream()
+                .map(place -> PlaceResponse.from(place)
+                        .withBookmarked(bookmarkedPlaceService.isBookmarked(user, place)))
+                .toList();
+        myList.addAll(placeResponses.stream()
                 .map(placeResponse -> MyListItem.builder()
                         .contentType(ContentType.PLACE)
                         .placeResponse(placeResponse)
                         .build())
-                .collect(Collectors.toList()));
+                .toList());
 
         // updatedAt 기준으로 정렬
         myList.sort(Comparator.comparing(item -> {
@@ -71,24 +84,35 @@ public class UserManager {
         List<BookmarkedListItem> bookmarkedList = new ArrayList<>();
 
         // 저장된 가이드 목록 조회
-        GuideListResponse guideListResponse = guideManager.getBookmarkedGuides(user);
-        bookmarkedList.addAll(guideListResponse.getGuides().stream()
+        List<Guide> guides = bookmarkedGuideService.findBookmarkedGuidesByUser(user);
+        List<GuideResponse> guideResponses = guides.stream()
+                .map(guide -> GuideResponse.from(guide)
+                        .withBookmarked(true))
+                .toList();
+
+        bookmarkedList.addAll(guideResponses.stream()
                 .map(guideResponse -> BookmarkedListItem.builder()
                         .contentType(ContentType.GUIDE)
                         .guideResponse(guideResponse)
                         .guideUpdatedAt(guideResponse.getUpdatedAt())
                         .build())
-                .collect(Collectors.toList()));
+                .toList());
 
         // 저장된 식당 목록 조회
-        PlaceListResponse placeListResponse = placeManager.getMyBookmarkedPlaces(user);
-        bookmarkedList.addAll(placeListResponse.getPlaces().stream()
+        List<Place> places = bookmarkedPlaceService.getBookmarkedPlaces(user).stream()
+                .map(BookmarkedPlace::getPlace)
+                .toList();
+        List<PlaceResponse> placeResponses = places.stream()
+                .map(place -> PlaceResponse.from(place)
+                        .withBookmarked(true))
+                .toList();
+        bookmarkedList.addAll(placeResponses.stream()
                 .map(placeResponse -> BookmarkedListItem.builder()
                         .contentType(ContentType.PLACE)
                         .placeResponse(placeResponse)
                         .placeUpdatedAt(placeResponse.getUpdatedAt())
                         .build())
-                .collect(Collectors.toList()));
+                .toList());
 
         // updatedAt 기준으로 정렬
         bookmarkedList.sort(Comparator.comparing(item -> {
