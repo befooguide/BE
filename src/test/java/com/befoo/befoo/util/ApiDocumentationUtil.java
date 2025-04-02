@@ -61,7 +61,8 @@ public class ApiDocumentationUtil {
                 apiDoc.append("\n### Response Body\n\n");
                 
                 // 본문 출력
-                if (response.getContentAsByteArray() != null && response.getContentAsByteArray().length > 0) {
+                response.getContentAsByteArray();
+                if (response.getContentAsByteArray().length > 0) {
                     String content = response.getContentAsString();
                     String responseContentType = response.getContentType();
                     formatJsonContent(apiDoc, content, responseContentType);
