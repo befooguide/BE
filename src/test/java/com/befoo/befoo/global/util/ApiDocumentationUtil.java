@@ -1,4 +1,4 @@
-package com.befoo.befoo.util;
+package com.befoo.befoo.global.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -58,7 +58,7 @@ public class ApiDocumentationUtil {
                 MockHttpServletResponse response = result.getResponse();
                 StringBuilder apiDoc = new StringBuilder();
                 
-                apiDoc.append("\n### Response Body\n\n");
+                apiDoc.append("\n[Response Body]\n");
                 
                 // 본문 출력
                 response.getContentAsByteArray();
@@ -82,25 +82,23 @@ public class ApiDocumentationUtil {
      * 기본 정보 섹션 형식화
      */
     private static void formatBasicInfo(StringBuilder apiDoc, MockHttpServletRequest request) {
-        apiDoc.append("\n### **기본 정보**\n\n");
-        apiDoc.append("- **URL**: ").append(request.getRequestURI()).append("\n");
-        apiDoc.append("- **Method**: ").append(request.getMethod()).append("\n");
+        apiDoc.append("\n[기본 정보]\n");
+        apiDoc.append("- URL: ").append(request.getRequestURI()).append("\n");
+        apiDoc.append("- Method: ").append(request.getMethod()).append("\n");
         
         // 인증 정보 확인
         String authHeader = request.getHeader("Authorization");
         if (authHeader != null && !authHeader.isEmpty()) {
-            apiDoc.append("- **인증**: 필요 (JWT 토큰)\n");
+            apiDoc.append("- 인증: 필요 (JWT 토큰)\n");
         } else {
-            apiDoc.append("- **인증**: 불필요\n");
+            apiDoc.append("- 인증: 불필요\n");
         }
         
         // Content-Type 확인
         String contentType = request.getContentType();
         if (contentType != null && !contentType.isEmpty()) {
-            apiDoc.append("- **Content-Type**: ").append(contentType).append("\n");
+            apiDoc.append("- Content-Type: ").append(contentType).append("\n");
         }
-        
-        apiDoc.append("\n---\n");
     }
     
     /**
@@ -110,7 +108,7 @@ public class ApiDocumentationUtil {
         String content = new String(request.getContentAsByteArray());
         String contentType = request.getContentType();
         
-        apiDoc.append("\n### Request Body\n\n");
+        apiDoc.append("[Request Body]\n");
         formatJsonContent(apiDoc, content, contentType);
     }
     
@@ -120,15 +118,14 @@ public class ApiDocumentationUtil {
     private static void formatJsonContent(StringBuilder apiDoc, String content, String contentType) {
         try {
             if (contentType != null && contentType.contains("application/json")) {
-                apiDoc.append("```json\n");
                 JsonNode jsonNode = objectMapper.readTree(content);
                 apiDoc.append(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonNode));
-                apiDoc.append("\n```\n");
+                apiDoc.append("\n");
             } else {
-                apiDoc.append("```\n").append(content).append("\n```\n");
+                apiDoc.append(content).append("\n");
             }
         } catch (JsonProcessingException e) {
-            apiDoc.append("```\n").append(content).append("\n```\n");
+            apiDoc.append(content).append("\n");
         }
     }
 } 

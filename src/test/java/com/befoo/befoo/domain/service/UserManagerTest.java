@@ -1,7 +1,7 @@
 package com.befoo.befoo.domain.service;
 
 import com.befoo.befoo.domain.dto.*;
-import com.befoo.befoo.domain.entity.User;
+import com.befoo.befoo.domain.entity.*;
 import com.befoo.befoo.domain.entity.enums.Role;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -12,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -21,20 +22,28 @@ import static org.mockito.Mockito.*;
 class UserManagerTest {
 
     @Mock
-    private GuideManager guideManager;
-
-    @Mock
-    private PlaceManager placeManager;
-
-    @Mock
     private UserService userService;
+
+    @Mock
+    private GuideService guideService;
+
+    @Mock
+    private ReviewService reviewService;
+
+    @Mock
+    private BookmarkedGuideService bookmarkedGuideService;
+
+    @Mock
+    private BookmarkedPlaceService bookmarkedPlaceService;
 
     @InjectMocks
     private UserManager userManager;
 
     private User testUser;
-    private GuideListResponse guideListResponse;
-    private PlaceListResponse placeListResponse;
+    private List<Guide> testGuides;
+    private List<Place> testPlaces;
+    private List<BookmarkedGuide> testBookmarkedGuides;
+    private List<BookmarkedPlace> testBookmarkedPlaces;
 
     @BeforeEach
     void setUp() {
@@ -47,15 +56,39 @@ class UserManagerTest {
                 .allergies(new ArrayList<>())
                 .build();
 
-        // 테스트용 가이드 목록 응답 객체 생성
-        guideListResponse = GuideListResponse.builder()
-                .guides(new ArrayList<>())
-                .build();
+        // 테스트용 가이드 목록 생성
+        testGuides = new ArrayList<>();
+        testGuides.add(Guide.builder()
+                .id("1")
+                .name("테스트 가이드")
+                .description("테스트 가이드 설명")
+                .user(testUser)
+                .build());
 
-        // 테스트용 장소 목록 응답 객체 생성
-        placeListResponse = PlaceListResponse.builder()
-                .places(new ArrayList<>())
-                .build();
+        // 테스트용 장소 목록 생성
+        testPlaces = new ArrayList<>();
+        testPlaces.add(Place.builder()
+                .id("1")
+                .name("테스트 장소")
+                .description("테스트 장소 설명")
+                .reviews(new ArrayList<>())
+                .build());
+
+        // 테스트용 북마크된 가이드 목록 생성
+        testBookmarkedGuides = new ArrayList<>();
+        testBookmarkedGuides.add(BookmarkedGuide.builder()
+                .id("1")
+                .user(testUser)
+                .guide(testGuides.get(0))
+                .build());
+
+        // 테스트용 북마크된 장소 목록 생성
+        testBookmarkedPlaces = new ArrayList<>();
+        testBookmarkedPlaces.add(BookmarkedPlace.builder()
+                .id("1")
+                .user(testUser)
+                .place(testPlaces.get(0))
+                .build());
     }
 
     @Test
@@ -74,12 +107,9 @@ class UserManagerTest {
     @DisplayName("프로필 수정 테스트")
     void putProfileTest() {
         // given
-        // 실제 UserProfileRequest 객체를 생성하고 필요한 경우 spy를 사용
         when(userService.updateProfile(any(User.class), any(UserProfileRequest.class))).thenReturn(testUser);
 
         // when
-        // UserProfileRequest 객체가 내부적으로 어떻게 사용되는지는 중요하지 않음
-        // 중요한 것은 userService.updateProfile 호출과 반환값
         UserProfileResponse response = userManager.putProfile(testUser, new UserProfileRequest());
 
         // then
@@ -91,31 +121,39 @@ class UserManagerTest {
     @DisplayName("나만의 목록 조회 테스트")
     void getMyListTest() {
         // given
-        when(guideManager.getMyGuides(any(User.class))).thenReturn(guideListResponse);
-        when(placeManager.getMyRecommendedPlaces(any(User.class))).thenReturn(placeListResponse);
+        when(guideService.findByUser(any(User.class))).thenReturn(testGuides);
+        when(reviewService.findRecommendedPlacesByUser(any(User.class))).thenReturn(testPlaces);
+        when(bookmarkedGuideService.isBookmarked(any(User.class), any(Guide.class))).thenReturn(false);
+        when(bookmarkedPlaceService.isBookmarked(any(User.class), any(Place.class))).thenReturn(false);
 
         // when
         MyListResponse response = userManager.getMyList(testUser);
 
         // then
         assertThat(response).isNotNull();
-        verify(guideManager, times(1)).getMyGuides(testUser);
-        verify(placeManager, times(1)).getMyRecommendedPlaces(testUser);
+        assertThat(response.getMyList()).hasSize(2);
+        verify(guideService, times(1)).findByUser(testUser);
+        verify(reviewService, times(1)).findRecommendedPlacesByUser(testUser);
     }
 
     @Test
     @DisplayName("저장 목록 조회 테스트")
     void getBookmarkedListTest() {
         // given
-        when(guideManager.getBookmarkedGuides(any(User.class))).thenReturn(guideListResponse);
-        when(placeManager.getMyBookmarkedPlaces(any(User.class))).thenReturn(placeListResponse);
+        when(bookmarkedGuideService.findBookmarkedGuidesByUser(any(User.class))).thenReturn(testGuides);
+        when(bookmarkedPlaceService.findBookmarkedPlacesByUser(any(User.class))).thenReturn(testPlaces);
+        when(bookmarkedGuideService.findBookmarkedGuideByUserAndGuide(any(User.class), any(Guide.class)))
+                .thenReturn(testBookmarkedGuides.get(0));
+        when(bookmarkedPlaceService.findBookmarkedPlaceByUserAndPlace(any(User.class), any(Place.class)))
+                .thenReturn(testBookmarkedPlaces.get(0));
 
         // when
         BookmarkedListResponse response = userManager.getBookmarkedList(testUser);
 
         // then
         assertThat(response).isNotNull();
-        verify(guideManager, times(1)).getBookmarkedGuides(testUser);
-        verify(placeManager, times(1)).getMyBookmarkedPlaces(testUser);
+        assertThat(response.getBookmarkedList()).hasSize(2);
+        verify(bookmarkedGuideService, times(1)).findBookmarkedGuidesByUser(testUser);
+        verify(bookmarkedPlaceService, times(1)).findBookmarkedPlacesByUser(testUser);
     }
 } 

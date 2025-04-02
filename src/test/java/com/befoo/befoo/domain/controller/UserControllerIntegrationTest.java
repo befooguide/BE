@@ -8,9 +8,9 @@ import com.befoo.befoo.domain.dto.UserProfileResponse;
 import com.befoo.befoo.domain.entity.User;
 import com.befoo.befoo.domain.entity.enums.Allergy;
 import com.befoo.befoo.domain.entity.enums.HealthCondition;
-import com.befoo.befoo.domain.entity.enums.Role;
 import com.befoo.befoo.domain.service.UserManager;
-import com.befoo.befoo.util.ApiDocumentationUtil;
+import com.befoo.befoo.global.util.ApiDocumentationUtil;
+import com.befoo.befoo.test.entity.TestUser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -27,14 +27,12 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -64,9 +62,7 @@ class UserControllerIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        // 시크릿 키를 노출하지 않고 더미 JWT 토큰 생성
         authToken = createDummyJwtToken();
-        
         initializeTestData();
         configureMockMvc();
     }
@@ -86,24 +82,9 @@ class UserControllerIntegrationTest {
      * 테스트 데이터 초기화
      */
     private void initializeTestData() {
-        // 테스트 사용자 설정
-        testUser = User.builder()
-                .username("테스트사용자")
-                .email("test@example.com")
-                .role(Role.ROLE_USER)
-                .healthConditions(new ArrayList<>())
-                .allergies(new ArrayList<>())
-                .build();
-        
+        testUser = TestUser.createDefaultUser();
         userDetails = new CustomUserDetails(testUser);
-        
-        // 기본 프로필 응답 설정
-        profileResponse = UserProfileResponse.builder()
-                .userId("test-user-id")
-                .username("테스트사용자")
-                .healthConditions(List.of())
-                .allergies(List.of())
-                .build();
+        profileResponse = UserProfileResponse.from(testUser);
     }
     
     /**
@@ -119,7 +100,7 @@ class UserControllerIntegrationTest {
     }
 
     @Test
-    @DisplayName("프로필 조회 API 테스트")
+    @DisplayName("[GET] 프로필 조회 API 테스트")
     void getProfileApiTest() throws Exception {
         // given
         when(userManager.getProfile(any(User.class))).thenReturn(profileResponse);
@@ -128,17 +109,20 @@ class UserControllerIntegrationTest {
         mockMvc.perform(get("/api/users/profile")
                 .header("Authorization", "Bearer " + authToken)
                 .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.message").value("프로필 조회 성공"))
                 .andExpect(jsonPath("$.data").exists())
                 .andExpect(jsonPath("$.data.user_id").value("test-user-id"))
-                .andExpect(jsonPath("$.data.username").value("테스트사용자"));
+                .andExpect(jsonPath("$.data.username").value("테스트사용자"))
+                .andExpect(jsonPath("$.data.health_conditions[0]").value("당뇨"))
+                .andExpect(jsonPath("$.data.health_conditions[1]").value("고혈압"))
+                .andExpect(jsonPath("$.data.allergies[0]").value("계란"))
+                .andExpect(jsonPath("$.data.allergies[1]").value("밀"));
     }
 
     @Test
-    @DisplayName("프로필 수정 API 테스트")
+    @DisplayName("[PUT] 프로필 수정 API 테스트")
     void putProfileApiTest() throws Exception {
         // given
         UserProfileRequest request = createUserProfileRequest();
@@ -152,17 +136,18 @@ class UserControllerIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request))
                 .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.message").value("프로필 수정 성공"))
                 .andExpect(jsonPath("$.data").exists())
                 .andExpect(jsonPath("$.data.user_id").value("test-user-id"))
                 .andExpect(jsonPath("$.data.username").value("테스트사용자"))
-                .andExpect(jsonPath("$.data.health_conditions[0]").value("당뇨"))
-                .andExpect(jsonPath("$.data.health_conditions[1]").value("고혈압"))
-                .andExpect(jsonPath("$.data.allergies[0]").value("계란"))
-                .andExpect(jsonPath("$.data.allergies[1]").value("밀"));
+                .andExpect(jsonPath("$.data.health_conditions[0]").value("암"))
+                .andExpect(jsonPath("$.data.health_conditions[1]").value("심장병"))
+                .andExpect(jsonPath("$.data.health_conditions[2]").value("골다공증"))
+                .andExpect(jsonPath("$.data.allergies[0]").value("닭고기"))
+                .andExpect(jsonPath("$.data.allergies[1]").value("소고기"))
+                .andExpect(jsonPath("$.data.allergies[2]").value("돼지고기"));
     }
     
     /**
@@ -170,8 +155,8 @@ class UserControllerIntegrationTest {
      */
     private UserProfileRequest createUserProfileRequest() {
         UserProfileRequest request = new UserProfileRequest();
-        request.setHealthConditions(Arrays.asList(HealthCondition.DIABETES, HealthCondition.HYPERTENSION));
-        request.setAllergies(Arrays.asList(Allergy.EGG, Allergy.WHEAT));
+        request.setHealthConditions(Arrays.asList(HealthCondition.CANCER, HealthCondition.HEART_DISEASE, HealthCondition.OSTEOPOROSIS));
+        request.setAllergies(Arrays.asList(Allergy.CHICKEN, Allergy.BEEF, Allergy.PORK));
         return request;
     }
     
@@ -182,13 +167,13 @@ class UserControllerIntegrationTest {
         return UserProfileResponse.builder()
                 .userId("test-user-id")
                 .username("테스트사용자")
-                .healthConditions(Arrays.asList("당뇨", "고혈압"))
-                .allergies(Arrays.asList("계란", "밀"))
+                .healthConditions(Arrays.asList("암", "심장병", "골다공증"))
+                .allergies(Arrays.asList("닭고기", "소고기", "돼지고기"))
                 .build();
     }
 
     @Test
-    @DisplayName("나만의 목록 조회 API 테스트")
+    @DisplayName("[GET] 나만의 목록 조회 API 테스트")
     void getMyListApiTest() throws Exception {
         // given
         MyListResponse mockResponse = MyListResponse.builder()
@@ -201,7 +186,6 @@ class UserControllerIntegrationTest {
         mockMvc.perform(get("/api/users/my-list")
                 .header("Authorization", "Bearer " + authToken)
                 .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.message").value("나만의 목록 조회 성공"))
@@ -210,7 +194,7 @@ class UserControllerIntegrationTest {
     }
 
     @Test
-    @DisplayName("저장 목록 조회 API 테스트")
+    @DisplayName("[GET] 저장 목록 조회 API 테스트")
     void getBookmarkedListApiTest() throws Exception {
         // given
         BookmarkedListResponse mockResponse = BookmarkedListResponse.builder()
@@ -223,7 +207,6 @@ class UserControllerIntegrationTest {
         mockMvc.perform(get("/api/users/bookmarked")
                 .header("Authorization", "Bearer " + authToken)
                 .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.message").value("저장 목록 조회 성공"))

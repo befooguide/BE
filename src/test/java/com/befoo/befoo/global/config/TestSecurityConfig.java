@@ -1,15 +1,31 @@
 package com.befoo.befoo.global.config;
 
+import com.befoo.befoo.domain.dto.CustomUserDetails;
+import com.befoo.befoo.domain.entity.User;
 import com.befoo.befoo.global.jwt.JwtUtil;
 import com.befoo.befoo.global.jwt.TestJwtTokenProvider;
+import com.befoo.befoo.test.entity.TestUser;
+
+import io.micrometer.common.lang.NonNull;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
 
 /**
  * 테스트 환경에서 사용할 보안 설정
@@ -69,17 +85,6 @@ public class TestSecurityConfig {
     @Bean
     @Primary
     public SecurityFilterChain testSecurityFilterChain(HttpSecurity http) throws Exception {
-        return configureTestSecurity(http)
-                .build();
-    }
-    
-    /**
-     * 테스트 보안 설정 구성
-     * 주의: 이 설정은 테스트 환경에서만 사용해야 하며, 운영 환경에 적용 시 보안 위험이 있음
-     * @param http HttpSecurity 인스턴스
-     * @return 구성된 HttpSecurity 인스턴스
-     */
-    private HttpSecurity configureTestSecurity(HttpSecurity http) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
@@ -87,6 +92,41 @@ public class TestSecurityConfig {
                 .sessionManagement(session -> 
                     session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> 
-                    authorize.anyRequest().permitAll()); // 테스트에서는 모든 요청 허용
+                    authorize.anyRequest().permitAll())
+                .addFilterBefore(new TestAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .build();
+    }
+
+    @Bean
+    @Primary
+    public UserDetailsService testUserDetailsService() {
+        return username -> {
+            User testUser = TestUser.createDefaultUser();
+            return new CustomUserDetails(testUser);
+        };
+    }
+
+    /**
+     * 테스트 환경에서 모든 요청에 인증 정보를 제공하는 필터
+     */
+    private static class TestAuthenticationFilter extends OncePerRequestFilter {
+        @Override
+        protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain)
+                throws ServletException, IOException {
+            
+            if (SecurityContextHolder.getContext().getAuthentication() != null) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+            
+            User testUser = TestUser.createDefaultUser();
+            
+            CustomUserDetails userDetails = new CustomUserDetails(testUser);
+            UsernamePasswordAuthenticationToken authentication = 
+                    new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+            
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            filterChain.doFilter(request, response);
+        }
     }
 } 
