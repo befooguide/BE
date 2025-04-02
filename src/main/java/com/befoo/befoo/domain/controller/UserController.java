@@ -59,4 +59,12 @@ public class UserController {
         var response = userManager.getBookmarkedList(user);
         return ApiResponse.success(response, "저장 목록 조회 성공");
     }
+
+    // 닉네임 중복 확인
+    @GetMapping("/exists-username")
+    public ApiResponse<Boolean> checkUsername(@RequestParam String username) {
+        log.info("GET 닉네임 중복 확인: {}", username);
+        boolean isAvailable = userManager.isUsernameAvailable(username);
+        return ApiResponse.success(isAvailable, isAvailable ? "사용 가능한 닉네임입니다." : "이미 사용 중인 닉네임입니다.");
+    }
 }

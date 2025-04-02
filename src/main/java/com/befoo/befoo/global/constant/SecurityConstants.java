@@ -6,8 +6,9 @@ import java.util.List;
 public class SecurityConstants {
     // 인증이 필요 없는 URL 패턴
     public static final List<String> PUBLIC_URLS = Arrays.asList(
-        "/api/guides",
-        "/api/guides/**"
+            "/api/users/exists-username",
+            "/api/guides",
+            "/api/guides/**"
     );
 
     // URL 패턴이 일치하는지 확인하는 메서드

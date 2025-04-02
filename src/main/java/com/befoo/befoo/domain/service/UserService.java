@@ -45,4 +45,8 @@ public class UserService {
         user.updateProfile(request);
         return userRepository.save(user);
     }
+
+    public boolean isUsernameAvailable(String username) {
+        return userRepository.findByUsername(username).isEmpty();
+    }
 }

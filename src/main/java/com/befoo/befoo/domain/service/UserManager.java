@@ -70,6 +70,11 @@ public class UserManager {
         return BookmarkedListResponse.from(bookmarkedList);
     }
 
+    // API: 닉네임 중복 확인
+    public boolean isUsernameAvailable(String username) {
+        return userService.isUsernameAvailable(username);
+    }
+
     private <T> void sortByUpdatedAt(List<T> items, java.util.function.Function<T, java.time.LocalDateTime> updatedAtExtractor) {
         items.sort(Comparator.comparing(updatedAtExtractor, Comparator.nullsLast(Comparator.reverseOrder())));
     }
