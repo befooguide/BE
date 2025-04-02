@@ -41,39 +41,19 @@ public class UserManager {
         List<MyListItem> myList = new ArrayList<>();
 
         // 가이드 목록 조회
-        List<Guide> guides = guideService.findByUser(user);
-        List<GuideResponse> guideResponses = guides.stream()
-                .map(guide -> GuideResponse.from(guide)
-                        .withBookmarked(bookmarkedGuideService.isBookmarked(user, guide)))
-                .toList();
-        myList.addAll(guideResponses.stream()
-                .map(guideResponse -> MyListItem.builder()
-                        .contentType(ContentType.GUIDE)
-                        .guideResponse(guideResponse)
-                        .build())
-                .toList());
+        myList.addAll(convertGuidesToMyListItems(guideService.findByUser(user), user));
 
         // 추천 식당 목록 조회
-        List<Place> places = reviewService.findRecommendedPlacesByUser(user);
-        List<PlaceResponse> placeResponses = places.stream()
-                .map(place -> PlaceResponse.from(place)
-                        .withBookmarked(bookmarkedPlaceService.isBookmarked(user, place)))
-                .toList();
-        myList.addAll(placeResponses.stream()
-                .map(placeResponse -> MyListItem.builder()
-                        .contentType(ContentType.PLACE)
-                        .placeResponse(placeResponse)
-                        .build())
-                .toList());
+        myList.addAll(convertPlacesToMyListItems(reviewService.findRecommendedPlacesByUser(user), user));
 
         // updatedAt 기준으로 정렬
-        myList.sort(Comparator.comparing(item -> {
+        sortByUpdatedAt(myList, item -> {
             if (item.getContentType() == ContentType.GUIDE) {
                 return item.getGuideResponse().getUpdatedAt();
             } else {
                 return item.getPlaceResponse().getUpdatedAt();
             }
-        }, Comparator.nullsLast(Comparator.reverseOrder())));
+        });
 
         return MyListResponse.from(myList);
     }
@@ -84,45 +64,68 @@ public class UserManager {
         List<BookmarkedListItem> bookmarkedList = new ArrayList<>();
 
         // 저장된 가이드 목록 조회
-        List<Guide> guides = bookmarkedGuideService.findBookmarkedGuidesByUser(user);
-        List<GuideResponse> guideResponses = guides.stream()
-                .map(guide -> GuideResponse.from(guide)
-                        .withBookmarked(true))
-                .toList();
+        bookmarkedList.addAll(convertGuidesToBookmarkedListItems(bookmarkedGuideService.findBookmarkedGuidesByUser(user)));
 
-        bookmarkedList.addAll(guideResponses.stream()
+        // 저장된 식당 목록 조회
+        bookmarkedList.addAll(convertPlacesToBookmarkedListItems(
+                bookmarkedPlaceService.getBookmarkedPlaces(user).stream()
+                        .map(BookmarkedPlace::getPlace)
+                        .toList()
+        ));
+
+        // updatedAt 기준으로 정렬
+        sortByUpdatedAt(bookmarkedList, item -> {
+            return item.getBookmarkedAt();
+        });
+
+        return BookmarkedListResponse.from(bookmarkedList);
+    }
+
+    private <T> void sortByUpdatedAt(List<T> items, java.util.function.Function<T, java.time.LocalDateTime> updatedAtExtractor) {
+        items.sort(Comparator.comparing(updatedAtExtractor, Comparator.nullsLast(Comparator.reverseOrder())));
+    }
+
+    private List<MyListItem> convertGuidesToMyListItems(List<Guide> guides, User user) {
+        return guides.stream()
+                .map(guide -> GuideResponse.from(guide)
+                        .withBookmarked(bookmarkedGuideService.isBookmarked(user, guide)))
+                .map(guideResponse -> MyListItem.builder()
+                        .contentType(ContentType.GUIDE)
+                        .guideResponse(guideResponse)
+                        .build())
+                .toList();
+    }
+
+    private List<MyListItem> convertPlacesToMyListItems(List<Place> places, User user) {
+        return places.stream()
+                .map(place -> PlaceResponse.from(place)
+                        .withBookmarked(bookmarkedPlaceService.isBookmarked(user, place)))
+                .map(placeResponse -> MyListItem.builder()
+                        .contentType(ContentType.PLACE)
+                        .placeResponse(placeResponse)
+                        .build())
+                .toList();
+    }
+
+    private List<BookmarkedListItem> convertGuidesToBookmarkedListItems(List<Guide> guides) {
+        return guides.stream()
+                .map(guide -> GuideResponse.from(guide).withBookmarked(true))
                 .map(guideResponse -> BookmarkedListItem.builder()
                         .contentType(ContentType.GUIDE)
                         .guideResponse(guideResponse)
-                        .guideUpdatedAt(guideResponse.getUpdatedAt())
+                        .bookmarkedAt(guideResponse.getUpdatedAt())
                         .build())
-                .toList());
+                .toList();
+    }
 
-        // 저장된 식당 목록 조회
-        List<Place> places = bookmarkedPlaceService.getBookmarkedPlaces(user).stream()
-                .map(BookmarkedPlace::getPlace)
-                .toList();
-        List<PlaceResponse> placeResponses = places.stream()
-                .map(place -> PlaceResponse.from(place)
-                        .withBookmarked(true))
-                .toList();
-        bookmarkedList.addAll(placeResponses.stream()
+    private List<BookmarkedListItem> convertPlacesToBookmarkedListItems(List<Place> places) {
+        return places.stream()
+                .map(place -> PlaceResponse.from(place).withBookmarked(true))
                 .map(placeResponse -> BookmarkedListItem.builder()
                         .contentType(ContentType.PLACE)
                         .placeResponse(placeResponse)
-                        .placeUpdatedAt(placeResponse.getUpdatedAt())
+                        .bookmarkedAt(placeResponse.getUpdatedAt())
                         .build())
-                .toList());
-
-        // updatedAt 기준으로 정렬
-        bookmarkedList.sort(Comparator.comparing(item -> {
-            if (item.getContentType() == ContentType.GUIDE) {
-                return item.getGuideUpdatedAt();
-            } else {
-                return item.getPlaceUpdatedAt();
-            }
-        }, Comparator.nullsLast(Comparator.reverseOrder())));
-
-        return BookmarkedListResponse.from(bookmarkedList);
+                .toList();
     }
 }

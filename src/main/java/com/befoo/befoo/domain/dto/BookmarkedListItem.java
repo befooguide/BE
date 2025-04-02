@@ -14,6 +14,5 @@ public class BookmarkedListItem {
     private ContentType contentType;
     private GuideResponse guideResponse;
     private PlaceResponse placeResponse;
-    private LocalDateTime guideUpdatedAt;
-    private LocalDateTime placeUpdatedAt;
+    private LocalDateTime bookmarkedAt;
 } 
