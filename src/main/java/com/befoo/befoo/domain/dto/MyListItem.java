@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Builder
 @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
@@ -12,4 +14,5 @@ public class MyListItem {
     private ContentType contentType;
     private GuideResponse guideResponse;
     private PlaceResponse placeResponse;
+    private LocalDateTime updatedAt;
 } 

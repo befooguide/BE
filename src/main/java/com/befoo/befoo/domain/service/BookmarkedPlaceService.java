@@ -32,8 +32,15 @@ public class BookmarkedPlaceService {
         bookmarkedPlaceRepository.delete(bookmarkedPlace);
     }
 
-    public List<BookmarkedPlace> getBookmarkedPlaces(User user) {
-        return bookmarkedPlaceRepository.findByUser(user);
+    public List<Place> findBookmarkedPlacesByUser(User user) {
+        return bookmarkedPlaceRepository.findByUser(user).stream()
+                .map(BookmarkedPlace::getPlace)
+                .toList();
+    }   
+
+    public BookmarkedPlace findBookmarkedPlaceByUserAndPlace(User user, Place place) {
+        return bookmarkedPlaceRepository.findByUserAndPlace(user, place)
+                .orElseThrow(() -> PlaceException.notBookmarked(place.getId()));
     }
 
     public boolean isBookmarked(User user, Place place) {

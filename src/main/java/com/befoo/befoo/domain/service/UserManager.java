@@ -1,6 +1,7 @@
 package com.befoo.befoo.domain.service;
 
 import com.befoo.befoo.domain.dto.*;
+import com.befoo.befoo.domain.entity.BookmarkedGuide;
 import com.befoo.befoo.domain.entity.BookmarkedPlace;
 import com.befoo.befoo.domain.entity.Guide;
 import com.befoo.befoo.domain.entity.Place;
@@ -47,13 +48,7 @@ public class UserManager {
         myList.addAll(convertPlacesToMyListItems(reviewService.findRecommendedPlacesByUser(user), user));
 
         // updatedAt 기준으로 정렬
-        sortByUpdatedAt(myList, item -> {
-            if (item.getContentType() == ContentType.GUIDE) {
-                return item.getGuideResponse().getUpdatedAt();
-            } else {
-                return item.getPlaceResponse().getUpdatedAt();
-            }
-        });
+        sortByUpdatedAt(myList, MyListItem::getUpdatedAt);
 
         return MyListResponse.from(myList);
     }
@@ -64,19 +59,13 @@ public class UserManager {
         List<BookmarkedListItem> bookmarkedList = new ArrayList<>();
 
         // 저장된 가이드 목록 조회
-        bookmarkedList.addAll(convertGuidesToBookmarkedListItems(bookmarkedGuideService.findBookmarkedGuidesByUser(user)));
+        bookmarkedList.addAll(convertGuidesToBookmarkedListItems(bookmarkedGuideService.findBookmarkedGuidesByUser(user), user));
 
         // 저장된 식당 목록 조회
-        bookmarkedList.addAll(convertPlacesToBookmarkedListItems(
-                bookmarkedPlaceService.getBookmarkedPlaces(user).stream()
-                        .map(BookmarkedPlace::getPlace)
-                        .toList()
-        ));
+        bookmarkedList.addAll(convertPlacesToBookmarkedListItems(bookmarkedPlaceService.findBookmarkedPlacesByUser(user), user));
 
         // updatedAt 기준으로 정렬
-        sortByUpdatedAt(bookmarkedList, item -> {
-            return item.getBookmarkedAt();
-        });
+        sortByUpdatedAt(bookmarkedList, BookmarkedListItem::getBookmarkedAt);
 
         return BookmarkedListResponse.from(bookmarkedList);
     }
@@ -92,6 +81,7 @@ public class UserManager {
                 .map(guideResponse -> MyListItem.builder()
                         .contentType(ContentType.GUIDE)
                         .guideResponse(guideResponse)
+                        .updatedAt(guideResponse.getUpdatedAt())
                         .build())
                 .toList();
     }
@@ -103,29 +93,34 @@ public class UserManager {
                 .map(placeResponse -> MyListItem.builder()
                         .contentType(ContentType.PLACE)
                         .placeResponse(placeResponse)
+                        .updatedAt(placeResponse.getUpdatedAt())
                         .build())
                 .toList();
     }
 
-    private List<BookmarkedListItem> convertGuidesToBookmarkedListItems(List<Guide> guides) {
+    private List<BookmarkedListItem> convertGuidesToBookmarkedListItems(List<Guide> guides, User user) {
         return guides.stream()
-                .map(guide -> GuideResponse.from(guide).withBookmarked(true))
-                .map(guideResponse -> BookmarkedListItem.builder()
-                        .contentType(ContentType.GUIDE)
-                        .guideResponse(guideResponse)
-                        .bookmarkedAt(guideResponse.getUpdatedAt())
-                        .build())
+                .map(guide -> {
+                    BookmarkedGuide bookmarkedGuide = bookmarkedGuideService.findBookmarkedGuideByUserAndGuide(user, guide);
+                    return BookmarkedListItem.builder()
+                            .contentType(ContentType.GUIDE)
+                            .guideResponse(GuideResponse.from(guide).withBookmarked(true))
+                            .bookmarkedAt(bookmarkedGuide.getUpdatedAt())
+                            .build();
+                })
                 .toList();
     }
 
-    private List<BookmarkedListItem> convertPlacesToBookmarkedListItems(List<Place> places) {
+    private List<BookmarkedListItem> convertPlacesToBookmarkedListItems(List<Place> places, User user) {
         return places.stream()
-                .map(place -> PlaceResponse.from(place).withBookmarked(true))
-                .map(placeResponse -> BookmarkedListItem.builder()
+                .map(place -> {
+                    BookmarkedPlace bookmarkedPlace = bookmarkedPlaceService.findBookmarkedPlaceByUserAndPlace(user, place);
+                    return BookmarkedListItem.builder()
                         .contentType(ContentType.PLACE)
-                        .placeResponse(placeResponse)
-                        .bookmarkedAt(placeResponse.getUpdatedAt())
-                        .build())
+                        .placeResponse(PlaceResponse.from(place).withBookmarked(true))
+                        .bookmarkedAt(bookmarkedPlace.getUpdatedAt())
+                        .build();
+                })
                 .toList();
     }
 }

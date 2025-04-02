@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -36,7 +35,12 @@ public class BookmarkedGuideService {
     public List<Guide> findBookmarkedGuidesByUser(User user) {
         return bookmarkedGuideRepository.findByUser(user).stream()
                 .map(BookmarkedGuide::getGuide)
-                .collect(Collectors.toList());
+                .toList();
+    }
+
+    public BookmarkedGuide findBookmarkedGuideByUserAndGuide(User user, Guide guide) {
+        return bookmarkedGuideRepository.findByUserAndGuide(user, guide)
+                .orElseThrow(() -> GuideException.notBookmarked(guide.getId()));
     }
 
     public boolean isBookmarked(User user, Guide guide) {

@@ -5,7 +5,6 @@ import com.befoo.befoo.domain.dto.PlaceResponse;
 import com.befoo.befoo.domain.dto.ReviewListResponse;
 import com.befoo.befoo.domain.dto.ReviewRequest;
 import com.befoo.befoo.domain.dto.ReviewResponse;
-import com.befoo.befoo.domain.entity.BookmarkedPlace;
 import com.befoo.befoo.domain.entity.Place;
 import com.befoo.befoo.domain.entity.Review;
 import com.befoo.befoo.domain.entity.User;
@@ -87,9 +86,7 @@ public class PlaceManager {
     // API: 저장한 식당 목록 조회
     @Transactional(readOnly = true)
     public PlaceListResponse getMyBookmarkedPlaces(User user) {
-        List<Place> places = bookmarkedPlaceService.getBookmarkedPlaces(user).stream()
-                .map(BookmarkedPlace::getPlace)
-                .toList();
+        List<Place> places = bookmarkedPlaceService.findBookmarkedPlacesByUser(user);
         List<PlaceResponse> placeResponses = places.stream()
                 .map(place -> PlaceResponse.from(place)
                         .withBookmarked(true))
