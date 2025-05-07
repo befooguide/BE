@@ -1,5 +1,7 @@
 package com.befoo.befoo.domain.entity;
 
+import com.befoo.befoo.domain.entity.enums.Allergy;
+import com.befoo.befoo.domain.entity.enums.HealthCondition;
 import com.befoo.befoo.global.entity.BaseTime;
 import de.huxhorn.sulky.ulid.ULID;
 import jakarta.persistence.*;
@@ -28,6 +30,16 @@ public class Guide extends BaseTime {
 
     @Column(nullable = false)
     private String description;
+
+//    @ElementCollection
+//    @CollectionTable(name = "user_health_conditions", joinColumns = @JoinColumn(name = "user_id"))
+//    @Enumerated(EnumType.STRING)
+//    private List<HealthCondition> healthConditions;
+//
+//    @ElementCollection
+//    @CollectionTable(name = "user_allergies", joinColumns = @JoinColumn(name = "user_id"))
+//    @Enumerated(EnumType.STRING)
+//    private List<Allergy> allergies;
 
     @OneToMany(mappedBy = "guide", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default

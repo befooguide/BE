@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +25,8 @@ public class GuideService {
                 .user(user)
                 .name(request.getName())
                 .description(request.getDescription())
+                .healthConditions(request.getHealthConditions())
+                .allergies(request.getAllergies())
                 .build();
 
         List<GuidePlace> guidePlaces = places.stream()
@@ -33,7 +34,7 @@ public class GuideService {
                         .guide(guide)
                         .place(place)
                         .build())
-                .collect(Collectors.toList());
+                .toList();
 
         guide.getGuidePlaces().addAll(guidePlaces);
         return guideRepository.save(guide);
@@ -50,7 +51,7 @@ public class GuideService {
                         .guide(guide)
                         .place(place)
                         .build())
-                .collect(Collectors.toList());
+                .toList();
         guide.getGuidePlaces().addAll(guidePlaces);
         
         return guideRepository.save(guide);

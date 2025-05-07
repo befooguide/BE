@@ -1,8 +1,6 @@
 name: Deploy to EC2
 
 on:
-  # pull_request_target:
-  #   types: [closed]
   push:
     branches:
       - main
@@ -11,6 +9,15 @@ jobs:
   Deploy:
     runs-on: ubuntu-latest
     steps:
+      - name: Tailscale 설정
+        run: |
+          curl -fsSL https://tailscale.com/install.sh | sh
+          sudo tailscale up --authkey ${{ secrets.TAILSCALE_AUTH_KEY }}
+      - name: Tailscale 연결 확인
+        run: |
+          sudo tailscale status
+          sudo tailscale ping ${{ secrets.EC2_HOST }} || true
+          sleep 15
       - name: SSH로 EC2 원격 접속하기
         uses: appleboy/ssh-action@v1.0.3
         env:

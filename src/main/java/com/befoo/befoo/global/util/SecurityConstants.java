@@ -1,4 +1,4 @@
-package com.befoo.befoo.global.constant;
+package com.befoo.befoo.global.util;
 
 import java.util.Arrays;
 import java.util.List;

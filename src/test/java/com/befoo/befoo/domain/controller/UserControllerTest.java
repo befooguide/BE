@@ -4,6 +4,8 @@ import com.befoo.befoo.domain.dto.*;
 import com.befoo.befoo.domain.entity.User;
 import com.befoo.befoo.domain.entity.enums.Role;
 import com.befoo.befoo.domain.service.UserManager;
+import com.befoo.befoo.global.dto.ApiResponse;
+import com.befoo.befoo.global.dto.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,6 +13,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +24,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * UserManager 서비스 계층 단위 테스트
@@ -35,8 +43,12 @@ class UserControllerTest {
     private UserProfileResponse profileResponse;
     private User testUser;
 
+    private MockMvc mockMvc;
+
     @BeforeEach
     void setUp() {
+        mockMvc = MockMvcBuilders.standaloneSetup(userController).build();
+        
         testUser = User.builder()
                 .username("테스트사용자")
                 .email("test@example.com")
@@ -110,5 +122,45 @@ class UserControllerTest {
         
         // then
         assertThat(result).isNotNull();
+    }
+
+    @Test
+    @DisplayName("닉네임 중복 확인 - 사용 가능한 닉네임")
+    void checkUsername_Available() throws Exception {
+        // given
+        String username = "testUser";
+        when(userManager.isUsernameAvailable(username)).thenReturn(true);
+
+        // when & then
+        mockMvc.perform(get("/api/users/exists-username")
+                .param("username", username))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data").value(true))
+                .andExpect(jsonPath("$.message").value("사용 가능한 닉네임입니다."));
+    }
+
+    @Test
+    @DisplayName("닉네임 중복 확인 - 이미 사용 중인 닉네임")
+    void checkUsername_AlreadyExists() throws Exception {
+        // given
+        String username = "existingUser";
+        when(userManager.isUsernameAvailable(username)).thenReturn(false);
+
+        // when & then
+        mockMvc.perform(get("/api/users/exists-username")
+                .param("username", username))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data").value(false))
+                .andExpect(jsonPath("$.message").value("이미 사용 중인 닉네임입니다."));
+    }
+
+    @Test
+    @DisplayName("닉네임 중복 확인 - 닉네임 파라미터 누락")
+    void checkUsername_MissingUsername() throws Exception {
+        // when & then
+        mockMvc.perform(get("/api/users/exists-username"))
+                .andExpect(status().isBadRequest());
     }
 } 
