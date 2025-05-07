@@ -16,12 +16,14 @@ import org.springframework.stereotype.Service;
 public class UserService {
     private final UserRepository userRepository;
 
-    public User createUser(OAuth2User oAuth2User) {
+    public User createUser(OAuth2User oAuth2User, String provider) {
         OAuth2Response oAuth2Response = new KakaoResponse(oAuth2User.getAttributes());
         String username = oAuth2Response.getName()+"-"+oAuth2Response.getProviderId();
-        if (userRepository.findByUsername(username).isPresent()) {
-            throw UserException.alreadyExists(username);
+
+        if (userRepository.existsByUsername(username)) {
+            return getUserByUsername(username);
         }
+
         User user = User.builder()
                 .username(username)
                 .email(oAuth2Response.getEmail())

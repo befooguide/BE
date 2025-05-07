@@ -25,8 +25,8 @@ public class GuideService {
                 .user(user)
                 .name(request.getName())
                 .description(request.getDescription())
-                .healthConditions(request.getHealthConditions())
-                .allergies(request.getAllergies())
+//                .healthConditions(request.getHealthConditions())
+//                .allergies(request.getAllergies())
                 .build();
 
         List<GuidePlace> guidePlaces = places.stream()

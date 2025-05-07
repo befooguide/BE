@@ -1,7 +1,6 @@
 package com.befoo.befoo.global.jwt;
 
 import com.befoo.befoo.domain.dto.CustomOAuth2User;
-import com.befoo.befoo.domain.dto.UserDto;
 import com.befoo.befoo.global.util.SecurityConstants;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -17,6 +16,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import java.io.IOException;
+
 @RequiredArgsConstructor
 @Slf4j
 public class JwtFilter extends OncePerRequestFilter {
@@ -27,7 +28,7 @@ public class JwtFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(@NonNull HttpServletRequest request) {
         String path = request.getRequestURI();
         String method = request.getMethod();
-        
+
         // GET 요청이고 public URL인 경우에만 필터를 거치지 않음
         return HttpMethod.GET.matches(method) && SecurityConstants.isPublicUrl(path);
     }
@@ -38,7 +39,7 @@ public class JwtFilter extends OncePerRequestFilter {
         //cookie들을 불러온 뒤 Authorization Key에 담긴 쿠키를 찾음
         String authorization = null;
         Cookie[] cookies = request.getCookies();
-        
+
         // 쿠키가 null인 경우 체크
         if (cookies != null) {
             for (Cookie cookie : cookies) {
@@ -71,13 +72,13 @@ public class JwtFilter extends OncePerRequestFilter {
         String role = jwtUtil.getRole(token);
 
         //userDto를 생성하여 값 set - 토큰에서 추출한 role 사용
-        UserDto userDto = UserDto.builder()
+        TokenDto tokenDto = TokenDto.builder()
                 .username(username)
                 .role(role)
                 .build();
 
         //UserDetails에 회원 정보 객체 담기
-        CustomOAuth2User customOAuth2User = new CustomOAuth2User(userDto);
+        CustomOAuth2User customOAuth2User = new CustomOAuth2User(tokenDto);
 
         //스프링 시큐리티 인증 토큰 생성
         Authentication authToken = new UsernamePasswordAuthenticationToken(customOAuth2User, null, customOAuth2User.getAuthorities());
