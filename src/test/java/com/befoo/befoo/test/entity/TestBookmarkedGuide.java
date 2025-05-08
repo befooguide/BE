@@ -1,8 +1,8 @@
 package com.befoo.befoo.test.entity;
 
-import com.befoo.befoo.domain.entity.BookmarkedGuide;
-import com.befoo.befoo.domain.entity.Guide;
-import com.befoo.befoo.domain.entity.User;
+import com.befoo.befoo.domain.guide.entity.BookmarkedGuide;
+import com.befoo.befoo.domain.guide.entity.Guide;
+import com.befoo.befoo.domain.user.entity.User;
 /**
  * 테스트에서 사용할 BookmarkedGuide 엔티티
  * 기본적인 테스트 데이터를 포함하고 있습니다.

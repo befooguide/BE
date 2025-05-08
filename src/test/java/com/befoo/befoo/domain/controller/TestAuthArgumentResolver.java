@@ -1,6 +1,6 @@
 package com.befoo.befoo.domain.controller;
 
-import com.befoo.befoo.domain.dto.CustomUserDetails;
+import com.befoo.befoo.domain.oauth2.dto.CustomUserDetails;
 import io.micrometer.common.lang.NonNull;
 import org.springframework.core.MethodParameter;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

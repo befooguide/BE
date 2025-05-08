@@ -1,8 +1,7 @@
 package com.befoo.befoo.test.entity;
 
-import com.befoo.befoo.domain.entity.Guide;
-import com.befoo.befoo.domain.entity.User;
-import java.time.LocalDateTime;
+import com.befoo.befoo.domain.guide.entity.Guide;
+import com.befoo.befoo.domain.user.entity.User;
 
 /**
  * 테스트에서 사용할 Guide 엔티티

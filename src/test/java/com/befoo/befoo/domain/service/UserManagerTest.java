@@ -1,8 +1,21 @@
 package com.befoo.befoo.domain.service;
 
-import com.befoo.befoo.domain.dto.*;
-import com.befoo.befoo.domain.entity.*;
-import com.befoo.befoo.domain.entity.enums.Role;
+import com.befoo.befoo.domain.guide.entity.BookmarkedGuide;
+import com.befoo.befoo.domain.guide.entity.Guide;
+import com.befoo.befoo.domain.guide.service.BookmarkedGuideService;
+import com.befoo.befoo.domain.guide.service.GuideService;
+import com.befoo.befoo.domain.place.entity.BookmarkedPlace;
+import com.befoo.befoo.domain.place.entity.Place;
+import com.befoo.befoo.domain.place.service.BookmarkedPlaceService;
+import com.befoo.befoo.domain.place.service.ReviewService;
+import com.befoo.befoo.domain.user.dto.BookmarkedListResponse;
+import com.befoo.befoo.domain.user.dto.MyListResponse;
+import com.befoo.befoo.domain.user.dto.UserProfileRequest;
+import com.befoo.befoo.domain.user.dto.UserProfileResponse;
+import com.befoo.befoo.domain.user.entity.enums.Role;
+import com.befoo.befoo.domain.user.entity.User;
+import com.befoo.befoo.domain.user.service.UserManager;
+import com.befoo.befoo.domain.user.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

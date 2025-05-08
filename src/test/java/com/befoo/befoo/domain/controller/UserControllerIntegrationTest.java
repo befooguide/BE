@@ -1,14 +1,15 @@
 package com.befoo.befoo.domain.controller;
 
-import com.befoo.befoo.domain.dto.BookmarkedListResponse;
-import com.befoo.befoo.domain.dto.CustomUserDetails;
-import com.befoo.befoo.domain.dto.MyListResponse;
-import com.befoo.befoo.domain.dto.UserProfileRequest;
-import com.befoo.befoo.domain.dto.UserProfileResponse;
-import com.befoo.befoo.domain.entity.User;
-import com.befoo.befoo.domain.entity.enums.Allergy;
-import com.befoo.befoo.domain.entity.enums.HealthCondition;
-import com.befoo.befoo.domain.service.UserManager;
+import com.befoo.befoo.domain.user.dto.BookmarkedListResponse;
+import com.befoo.befoo.domain.oauth2.dto.CustomUserDetails;
+import com.befoo.befoo.domain.user.dto.MyListResponse;
+import com.befoo.befoo.domain.user.dto.UserProfileRequest;
+import com.befoo.befoo.domain.user.dto.UserProfileResponse;
+import com.befoo.befoo.domain.user.entity.User;
+import com.befoo.befoo.domain.user.entity.enums.Allergy;
+import com.befoo.befoo.domain.user.entity.enums.HealthCondition;
+import com.befoo.befoo.domain.user.controller.UserController;
+import com.befoo.befoo.domain.user.service.UserManager;
 import com.befoo.befoo.global.util.ApiDocumentationUtil;
 import com.befoo.befoo.test.entity.TestUser;
 import com.fasterxml.jackson.databind.ObjectMapper;

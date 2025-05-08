@@ -1,7 +1,7 @@
 package com.befoo.befoo.global.config;
 
-import com.befoo.befoo.domain.dto.CustomUserDetails;
-import com.befoo.befoo.domain.entity.User;
+import com.befoo.befoo.domain.oauth2.dto.CustomUserDetails;
+import com.befoo.befoo.domain.user.entity.User;
 import com.befoo.befoo.global.jwt.JwtUtil;
 import com.befoo.befoo.global.jwt.TestJwtTokenProvider;
 import com.befoo.befoo.test.entity.TestUser;

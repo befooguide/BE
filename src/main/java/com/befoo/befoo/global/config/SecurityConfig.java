@@ -1,7 +1,7 @@
 package com.befoo.befoo.global.config;
 
-import com.befoo.befoo.domain.oauth2.CustomSuccessHandler;
-import com.befoo.befoo.domain.service.CustomOAuth2UserService;
+import com.befoo.befoo.domain.oauth2.service.CustomSuccessHandler;
+import com.befoo.befoo.domain.oauth2.service.CustomOAuth2UserService;
 import com.befoo.befoo.global.util.SecurityConstants;
 import com.befoo.befoo.global.jwt.JwtFilter;
 import com.befoo.befoo.global.jwt.JwtUtil;

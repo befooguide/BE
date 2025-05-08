@@ -1,9 +1,9 @@
 package com.befoo.befoo.test.entity;
 
-import com.befoo.befoo.domain.entity.User;
-import com.befoo.befoo.domain.entity.enums.Allergy;
-import com.befoo.befoo.domain.entity.enums.HealthCondition;
-import com.befoo.befoo.domain.entity.enums.Role;
+import com.befoo.befoo.domain.user.entity.User;
+import com.befoo.befoo.domain.user.entity.enums.Allergy;
+import com.befoo.befoo.domain.user.entity.enums.HealthCondition;
+import com.befoo.befoo.domain.user.entity.enums.Role;
 import java.util.ArrayList;
 import java.util.Arrays;
 

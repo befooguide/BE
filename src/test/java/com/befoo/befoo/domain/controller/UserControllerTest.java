@@ -1,11 +1,13 @@
 package com.befoo.befoo.domain.controller;
 
-import com.befoo.befoo.domain.dto.*;
-import com.befoo.befoo.domain.entity.User;
-import com.befoo.befoo.domain.entity.enums.Role;
-import com.befoo.befoo.domain.service.UserManager;
-import com.befoo.befoo.global.dto.ApiResponse;
-import com.befoo.befoo.global.dto.Response;
+import com.befoo.befoo.domain.user.dto.BookmarkedListResponse;
+import com.befoo.befoo.domain.user.dto.MyListResponse;
+import com.befoo.befoo.domain.user.dto.UserProfileRequest;
+import com.befoo.befoo.domain.user.dto.UserProfileResponse;
+import com.befoo.befoo.domain.user.entity.User;
+import com.befoo.befoo.domain.user.entity.enums.Role;
+import com.befoo.befoo.domain.user.controller.UserController;
+import com.befoo.befoo.domain.user.service.UserManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,7 +17,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,6 +1,6 @@
 package com.befoo.befoo.global.jwt;
 
-import com.befoo.befoo.domain.dto.CustomOAuth2User;
+import com.befoo.befoo.domain.oauth2.dto.CustomOAuth2User;
 import com.befoo.befoo.global.util.SecurityConstants;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

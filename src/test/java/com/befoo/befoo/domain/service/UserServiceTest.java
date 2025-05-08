@@ -1,8 +1,9 @@
 package com.befoo.befoo.domain.service;
 
-import com.befoo.befoo.domain.entity.User;
-import com.befoo.befoo.domain.entity.enums.Role;
-import com.befoo.befoo.domain.repository.UserRepository;
+import com.befoo.befoo.domain.user.entity.User;
+import com.befoo.befoo.domain.user.entity.enums.Role;
+import com.befoo.befoo.domain.user.repository.UserRepository;
+import com.befoo.befoo.domain.user.service.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

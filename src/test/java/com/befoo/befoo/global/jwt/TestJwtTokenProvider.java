@@ -1,6 +1,6 @@
 package com.befoo.befoo.global.jwt;
 
-import com.befoo.befoo.domain.entity.User;
+import com.befoo.befoo.domain.user.entity.User;
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
