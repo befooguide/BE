@@ -14,8 +14,8 @@ public class CorsConfig {
     public CorsConfigurationSource corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOriginPatterns(List.of(
-                "http://localhost:3000"
-                // 프론트 도메인
+                "http://localhost:3000",
+                "https://www.befoo.kr"
         ));
         config.addAllowedMethod("*");
         config.addAllowedHeader("*");
