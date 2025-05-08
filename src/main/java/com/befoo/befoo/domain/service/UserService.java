@@ -18,7 +18,7 @@ public class UserService {
 
     public User createUser(OAuth2User oAuth2User, String provider) {
         OAuth2Response oAuth2Response = new KakaoResponse(oAuth2User.getAttributes());
-        String username = oAuth2Response.getName()+"-"+oAuth2Response.getProviderId();
+        String username = oAuth2Response.getProviderId();
 
         if (userRepository.existsByUsername(username)) {
             return getUserByUsername(username);
