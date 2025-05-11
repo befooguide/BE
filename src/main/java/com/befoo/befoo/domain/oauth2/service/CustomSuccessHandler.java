@@ -41,7 +41,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         log.info("JWT token: {}", token);
 
         response.addCookie(createCookie("Authorization", token));
-        response.sendRedirect("https://www.befoo.kr/mypage");
+        response.sendRedirect("http://localhost:3000/mypage");
     }
 
     private Cookie createCookie(String key, String value) {
