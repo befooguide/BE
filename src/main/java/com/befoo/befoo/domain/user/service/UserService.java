@@ -20,29 +20,30 @@ public class UserService {
 
     public User createUser(OAuth2User oAuth2User, String provider) {
         OAuth2Response oAuth2Response = new KakaoResponse(oAuth2User.getAttributes());
-        String username = oAuth2Response.getProviderId();
+        String username = provider + "-" + oAuth2Response.getProviderId();
 
         log.info("username: {}", username);
 
         if (userRepository.existsByUsername(username)) {
-            return getUserByUsername(username);
+            return findUserByUsername(username);
         }
 
         User user = User.builder()
                 .username(username)
-                .email(oAuth2Response.getEmail())
-                .image(oAuth2Response.getImage())
                 .role(Role.ROLE_USER)
+                .email(oAuth2Response.getEmail())
+                .nickname(oAuth2Response.getName())
+                .image(oAuth2Response.getImage())
                 .build();
         return userRepository.save(user);
     }
 
-    public User getUserByUserId(String userId) {
+    public User findUserByUserId(String userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> UserException.notFound(userId));
     }
 
-    public User getUserByUsername(String username) {
+    public User findUserByUsername(String username) {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> UserException.notFound(username));
     }
@@ -52,7 +53,7 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public boolean isUsernameAvailable(String username) {
-        return userRepository.findByUsername(username).isEmpty();
+    public boolean isNicknameAvailable(String nickname) {
+        return !userRepository.existsByNickname(nickname);
     }
 }

@@ -60,10 +60,10 @@ public class UserController {
     }
 
     // 닉네임 중복 확인
-    @GetMapping("/exists-username")
-    public ApiResponse<Boolean> checkUsername(@RequestParam String username) {
-        log.info("GET 닉네임 중복 확인: {}", username);
-        boolean isAvailable = userManager.isUsernameAvailable(username);
+    @GetMapping("/exists-nickname")
+    public ApiResponse<Boolean> checkDuplicateNickname(@RequestParam String nickname) {
+        log.info("GET 닉네임 중복 확인: {}", nickname);
+        boolean isAvailable = userManager.isUsernameAvailable(nickname);
         return ApiResponse.success(isAvailable, isAvailable ? "사용 가능한 닉네임입니다." : "이미 사용 중인 닉네임입니다.");
     }
 }

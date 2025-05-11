@@ -30,7 +30,7 @@ public class GuideManager {
     // API: 가이드 생성
     @Transactional
     public GuideResponse createGuide(String username, GuideRequest request) {
-        User user = userService.getUserByUsername(username);
+        User user = userService.findUserByUsername(username);
         List<Place> places = request.getPlaceIds().stream()
                 .map(placeService::findById)
                 .collect(Collectors.toList());
@@ -43,7 +43,7 @@ public class GuideManager {
     // API: 가이드 수정
     @Transactional
     public GuideResponse updateGuide(String guideId, String username, GuideRequest request) {
-        User user = userService.getUserByUsername(username);
+        User user = userService.findUserByUsername(username);
         Guide guide = guideService.findById(guideId);
         guideService.validateGuideBelongsToUser(guide, user.getId());
 
@@ -60,7 +60,7 @@ public class GuideManager {
     // API: 가이드 삭제
     @Transactional
     public void deleteGuide(String guideId, String username) {
-        User user = userService.getUserByUsername(username);
+        User user = userService.findUserByUsername(username);
         Guide guide = guideService.findById(guideId);
         guideService.validateGuideBelongsToUser(guide, user.getId());
         guideService.deleteGuide(guideId);
@@ -69,7 +69,7 @@ public class GuideManager {
     // API: 가이드 목록 조회
     @Transactional(readOnly = true)
     public GuideListResponse getGuides(String username) {
-        User user = userService.getUserByUsername(username);
+        User user = userService.findUserByUsername(username);
         List<Guide> guides = guideService.findAll();
         List<GuideResponse> guideResponses = guides.stream()
                 .map(guide -> GuideResponse.from(guide)
@@ -82,7 +82,7 @@ public class GuideManager {
     // API: 가이드 상세 조회
     @Transactional(readOnly = true)
     public GuideResponse getGuideDetail(String guideId, String username) {
-        User user = userService.getUserByUsername(username);
+        User user = userService.findUserByUsername(username);
         Guide guide = guideService.findById(guideId);
         return GuideResponse.from(guide)
                 .withBookmarked(bookmarkedGuideService.isBookmarked(user, guide));
@@ -91,7 +91,7 @@ public class GuideManager {
     // API: 나만의 가이드 목록 조회
     @Transactional(readOnly = true)
     public GuideListResponse getMyGuides(String username) {
-        User user = userService.getUserByUsername(username);
+        User user = userService.findUserByUsername(username);
         List<Guide> guides = guideService.findByUser(user);
         List<GuideResponse> guideResponses = guides.stream()
                 .map(guide -> GuideResponse.from(guide)
@@ -104,7 +104,7 @@ public class GuideManager {
     // API: 가이드 저장
     @Transactional
     public GuideResponse bookmarkGuide(String guideId, String username) {
-        User user = userService.getUserByUsername(username);
+        User user = userService.findUserByUsername(username);
         Guide guide = guideService.findById(guideId);
         bookmarkedGuideService.createBookmarkedGuide(user, guide);
         return GuideResponse.from(guide)
@@ -114,7 +114,7 @@ public class GuideManager {
     // API: 저장 가이드 목록 조회
     @Transactional(readOnly = true)
     public GuideListResponse getBookmarkedGuides(String username) {
-        User user = userService.getUserByUsername(username);
+        User user = userService.findUserByUsername(username);
         List<Guide> guides = bookmarkedGuideService.findBookmarkedGuidesByUser(user);
         List<GuideResponse> guideResponses = guides.stream()
                 .map(guide -> GuideResponse.from(guide)
@@ -127,7 +127,7 @@ public class GuideManager {
     // API: 가이드 저장 취소
     @Transactional
     public void unbookmarkGuide(String guideId, String username) {
-        User user = userService.getUserByUsername(username);
+        User user = userService.findUserByUsername(username);
         Guide guide = guideService.findById(guideId);
         bookmarkedGuideService.deleteBookmarkedGuide(user, guide);
     }

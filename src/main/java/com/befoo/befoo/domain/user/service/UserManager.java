@@ -33,14 +33,14 @@ public class UserManager {
     // API: 프로필 조회
     @Transactional(readOnly = true)
     public UserProfileResponse getProfile(String username) {
-        User user = userService.getUserByUsername(username);
+        User user = userService.findUserByUsername(username);
         return UserProfileResponse.from(user);
     }
 
     // API: 프로필 수정
     @Transactional
     public UserProfileResponse putProfile(String username, UserProfileRequest request) {
-        User user = userService.getUserByUsername(username);
+        User user = userService.findUserByUsername(username);
         User updatedUser = userService.updateProfile(user, request);
         return UserProfileResponse.from(updatedUser);
     }
@@ -48,7 +48,7 @@ public class UserManager {
     // API: 나만의 목록 조회
     @Transactional(readOnly = true)
     public MyListResponse getMyList(String username) {
-        User user = userService.getUserByUsername(username);
+        User user = userService.findUserByUsername(username);
         List<MyListItem> myList = new ArrayList<>();
 
         // 가이드 목록 조회
@@ -66,7 +66,7 @@ public class UserManager {
     // API: 저장 목록 조회
     @Transactional(readOnly = true)
     public BookmarkedListResponse getBookmarkedList(String username) {
-        User user = userService.getUserByUsername(username);
+        User user = userService.findUserByUsername(username);
         List<BookmarkedListItem> bookmarkedList = new ArrayList<>();
 
         // 저장된 가이드 목록 조회
@@ -82,8 +82,8 @@ public class UserManager {
     }
 
     // API: 닉네임 중복 확인
-    public boolean isUsernameAvailable(String username) {
-        return userService.isUsernameAvailable(username);
+    public boolean isUsernameAvailable(String nickname) {
+        return userService.isNicknameAvailable(nickname);
     }
 
     private <T> void sortByUpdatedAt(List<T> items, java.util.function.Function<T, java.time.LocalDateTime> updatedAtExtractor) {

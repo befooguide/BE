@@ -22,7 +22,7 @@ public class User extends BaseTime {
     @Builder.Default
     private final String id = new ULID().nextULID();
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, updatable = false)
     private String username;
 
     @Column(nullable = false)
@@ -30,6 +30,8 @@ public class User extends BaseTime {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    private String nickname;
 
     private String image;
     
@@ -44,7 +46,7 @@ public class User extends BaseTime {
     private List<Allergy> allergies;
 
     public void updateProfile(UserProfileRequest request) {
-        this.username = request.getUsername();
+        this.nickname = request.getNickname();
         this.healthConditions = request.getHealthConditions();
         this.allergies = request.getAllergies();
     }

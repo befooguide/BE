@@ -15,7 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class UserProfileRequest {
-    private String username;
+    private String nickname;
     private List<HealthCondition> healthConditions;
     private List<Allergy> allergies;
 }

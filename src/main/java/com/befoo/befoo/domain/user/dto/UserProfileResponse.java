@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 public class UserProfileResponse implements Response {
     private String userId;
     private String username;
+    private String nickname;
     private List<String> healthConditions;
     private List<String> allergies;
 
@@ -25,6 +26,7 @@ public class UserProfileResponse implements Response {
         return UserProfileResponse.builder()
                 .userId(user.getId())
                 .username(user.getUsername())
+                .nickname(user.getNickname())
                 .healthConditions(user.getHealthConditions() != null ? 
                         user.getHealthConditions().stream()
                         .map(HealthCondition::getDescription)
