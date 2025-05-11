@@ -18,8 +18,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-@RequiredArgsConstructor
 @Slf4j
+@RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
@@ -36,16 +36,25 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
 
-        //cookie들을 불러온 뒤 Authorization Key에 담긴 쿠키를 찾음
         String authorization = null;
-        Cookie[] cookies = request.getCookies();
 
-        // 쿠키가 null인 경우 체크
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                log.debug("Cookie name: {}", cookie.getName());
-                if (cookie.getName().equals("Authorization")) {
-                    authorization = cookie.getValue();
+        // 1. Authorization 헤더 우선 확인
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            authorization = authHeader.substring(7);
+            log.info("Authorization 헤더에서 토큰 추출");
+        }
+
+        // 2. Authorization 쿠키 확인 (헤더 없을 때만)
+        if (authorization == null) {
+            Cookie[] cookies = request.getCookies();
+            if (cookies != null) {
+                for (Cookie cookie : cookies) {
+                    if ("Authorization".equals(cookie.getName())) {
+                        authorization = cookie.getValue();
+                        log.info("Authorization 쿠키에서 값 추출");
+                        break;
+                    }
                 }
             }
         }

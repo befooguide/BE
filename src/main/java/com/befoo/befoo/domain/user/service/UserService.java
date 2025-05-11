@@ -8,9 +8,11 @@ import com.befoo.befoo.domain.user.entity.enums.Role;
 import com.befoo.befoo.domain.user.exception.UserException;
 import com.befoo.befoo.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -19,6 +21,8 @@ public class UserService {
     public User createUser(OAuth2User oAuth2User, String provider) {
         OAuth2Response oAuth2Response = new KakaoResponse(oAuth2User.getAttributes());
         String username = oAuth2Response.getProviderId();
+
+        log.info("username: {}", username);
 
         if (userRepository.existsByUsername(username)) {
             return getUserByUsername(username);

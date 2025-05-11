@@ -38,6 +38,7 @@ out/
 
 ### properties ###
 **/application.yaml
+**/application-dev.yaml
 
 # macOS system files
 *.DS_Store
