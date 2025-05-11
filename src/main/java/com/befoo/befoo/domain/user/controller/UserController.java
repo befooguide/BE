@@ -1,9 +1,8 @@
 package com.befoo.befoo.domain.user.controller;
 
-import com.befoo.befoo.domain.oauth2.dto.CustomUserDetails;
+import com.befoo.befoo.domain.oauth2.dto.CustomOAuth2User;
 import com.befoo.befoo.domain.user.dto.UserProfileRequest;
 import com.befoo.befoo.domain.user.dto.UserProfileResponse;
-import com.befoo.befoo.domain.user.entity.User;
 import com.befoo.befoo.domain.user.service.UserManager;
 import com.befoo.befoo.global.dto.ApiResponse;
 import com.befoo.befoo.global.dto.Response;
@@ -22,41 +21,41 @@ public class UserController {
     // 프로필 조회
     @GetMapping("/profile")
     public ApiResponse<Response> getProfile(
-            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        User user = customUserDetails.user();
-        log.info("GET 프로필: {}", user.getId());
-        UserProfileResponse response = userManager.getProfile(user);
+            @AuthenticationPrincipal CustomOAuth2User oAuth2User) {
+        String username = oAuth2User.getName();
+        log.info("GET 프로필: {}", username);
+        UserProfileResponse response = userManager.getProfile(username);
         return ApiResponse.success(response, "프로필 조회 성공");
     }
 
     // 프로필 수정
     @PutMapping("/profile")
     public ApiResponse<Response> putProfile(
-            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @AuthenticationPrincipal CustomOAuth2User oAuth2User,
             @RequestBody UserProfileRequest request) {
-        User user = customUserDetails.user();
-        log.info("PUT 프로필 수정: {}", user.getId());
-        UserProfileResponse response = userManager.putProfile(user, request);
+        String username = oAuth2User.getName();
+        log.info("PUT 프로필 수정: {}", username);
+        UserProfileResponse response = userManager.putProfile(username, request);
         return ApiResponse.success(response, "프로필 수정 성공");
     }
 
     // 나만의 목록 조회
     @GetMapping("/my-list")
     public ApiResponse<Response> getMyList(
-            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        User user = customUserDetails.user();
-        log.info("GET 나만의 목록 조회: {}", user.getId());
-        var response = userManager.getMyList(user);
+            @AuthenticationPrincipal CustomOAuth2User oAuth2User) {
+        String username = oAuth2User.getName();
+        log.info("GET 나만의 목록 조회: {}", username);
+        var response = userManager.getMyList(username);
         return ApiResponse.success(response, "나만의 목록 조회 성공");
     }
 
     // 저장 목록 조회
     @GetMapping("/bookmarked")
     public ApiResponse<Response> getBookmarkedList(
-            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        User user = customUserDetails.user();
-        log.info("GET 저장 목록 조회: {}", user.getId());
-        var response = userManager.getBookmarkedList(user);
+            @AuthenticationPrincipal CustomOAuth2User oAuth2User) {
+        String username = oAuth2User.getName();
+        log.info("GET 저장 목록 조회: {}", username);
+        var response = userManager.getBookmarkedList(username);
         return ApiResponse.success(response, "저장 목록 조회 성공");
     }
 

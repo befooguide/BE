@@ -32,20 +32,23 @@ public class UserManager {
 
     // API: 프로필 조회
     @Transactional(readOnly = true)
-    public UserProfileResponse getProfile(User user) {
+    public UserProfileResponse getProfile(String username) {
+        User user = userService.getUserByUsername(username);
         return UserProfileResponse.from(user);
     }
 
     // API: 프로필 수정
     @Transactional
-    public UserProfileResponse putProfile(User user, UserProfileRequest request) {
+    public UserProfileResponse putProfile(String username, UserProfileRequest request) {
+        User user = userService.getUserByUsername(username);
         User updatedUser = userService.updateProfile(user, request);
         return UserProfileResponse.from(updatedUser);
     }
 
     // API: 나만의 목록 조회
     @Transactional(readOnly = true)
-    public MyListResponse getMyList(User user) {
+    public MyListResponse getMyList(String username) {
+        User user = userService.getUserByUsername(username);
         List<MyListItem> myList = new ArrayList<>();
 
         // 가이드 목록 조회
@@ -62,7 +65,8 @@ public class UserManager {
 
     // API: 저장 목록 조회
     @Transactional(readOnly = true)
-    public BookmarkedListResponse getBookmarkedList(User user) {
+    public BookmarkedListResponse getBookmarkedList(String username) {
+        User user = userService.getUserByUsername(username);
         List<BookmarkedListItem> bookmarkedList = new ArrayList<>();
 
         // 저장된 가이드 목록 조회

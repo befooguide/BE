@@ -1,12 +1,11 @@
 package com.befoo.befoo.domain.place.controller;
 
-import com.befoo.befoo.domain.oauth2.dto.CustomUserDetails;
+import com.befoo.befoo.domain.oauth2.dto.CustomOAuth2User;
 import com.befoo.befoo.domain.place.dto.PlaceListResponse;
 import com.befoo.befoo.domain.place.dto.PlaceResponse;
 import com.befoo.befoo.domain.place.dto.ReviewListResponse;
 import com.befoo.befoo.domain.place.dto.ReviewRequest;
 import com.befoo.befoo.domain.place.dto.ReviewResponse;
-import com.befoo.befoo.domain.user.entity.User;
 import com.befoo.befoo.domain.place.service.PlaceManager;
 import com.befoo.befoo.global.dto.ApiResponse;
 import com.befoo.befoo.global.dto.Response;
@@ -25,35 +24,35 @@ public class PlaceController {
     // 나만의 추천 식당 목록 조회
     @GetMapping("/my-list")
     public ApiResponse<Response> getMyRecommendedPlaces(
-            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        User user = customUserDetails.user();
-        log.info("GET 나만의 추천 식당 목록 조회: user-{}", user.getId());
-        PlaceListResponse response = placeManager.getMyRecommendedPlaces(user);
+            @AuthenticationPrincipal CustomOAuth2User oAuth2User) {
+        String username = oAuth2User.getName();
+        log.info("GET 나만의 추천 식당 목록 조회: user-{}", username);
+        PlaceListResponse response = placeManager.getMyRecommendedPlaces(username);
         return ApiResponse.success(response, "나만의 추천 식당 목록 조회 성공");
     }
 
     // 평가 저장
     @PostMapping("/{placeId}/reviews")
     public ApiResponse<Response> createReview(
-            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @AuthenticationPrincipal CustomOAuth2User oAuth2User,
             @PathVariable String placeId,
             @RequestBody ReviewRequest request) {
-        User user = customUserDetails.user();
-        log.info("POST 평가 저장: user-{}, place-{}", user.getId(), placeId);
-        ReviewResponse response = placeManager.createReview(placeId, user, request);
+        String username = oAuth2User.getName();
+        log.info("POST 평가 저장: user-{}, place-{}", username, placeId);
+        ReviewResponse response = placeManager.createReview(placeId, username, request);
         return ApiResponse.created(response, "평가 저장 성공");
     }
 
     // 평가 수정
     @PutMapping("/{placeId}/reviews/{reviewId}")
     public ApiResponse<Response> updateReview(
-            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @AuthenticationPrincipal CustomOAuth2User oAuth2User,
             @PathVariable String placeId,
             @PathVariable String reviewId,
             @RequestBody ReviewRequest request) {
-        User user = customUserDetails.user();
-        log.info("PUT 평가 수정: user-{}, place-{}, review-{}", user.getId(), placeId, reviewId);
-        ReviewResponse response = placeManager.updateReview(placeId, reviewId, user, request);
+        String username = oAuth2User.getName();
+        log.info("PUT 평가 수정: user-{}, place-{}, review-{}", username, placeId, reviewId);
+        ReviewResponse response = placeManager.updateReview(placeId, reviewId, username, request);
         return ApiResponse.success(response, "평가 수정 성공");
     }
 
@@ -79,32 +78,32 @@ public class PlaceController {
     // 식당 저장
     @PostMapping("/{placeId}/bookmarked")
     public ApiResponse<Response> createBookmarkedPlace(
-            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @AuthenticationPrincipal CustomOAuth2User oAuth2User,
             @PathVariable String placeId) {
-        User user = customUserDetails.user();
-        log.info("POST 식당 저장: user-{}, place-{}", user.getId(), placeId);
-        PlaceResponse response = placeManager.createBookmarkedPlace(user, placeId);
+        String username = oAuth2User.getName();
+        log.info("POST 식당 저장: user-{}, place-{}", username, placeId);
+        PlaceResponse response = placeManager.createBookmarkedPlace(username, placeId);
         return ApiResponse.created(response, "식당 저장 성공");
     }
 
     // 저장한 식당 목록 조회
     @GetMapping("/bookmarked")
     public ApiResponse<Response> getMyBookmarkedPlaces(
-            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        User user = customUserDetails.user();
-        log.info("GET 저장한 식당 목록 조회: user-{}", user.getId());
-        PlaceListResponse response = placeManager.getMyBookmarkedPlaces(user);
+            @AuthenticationPrincipal CustomOAuth2User oAuth2User) {
+        String username = oAuth2User.getName();
+        log.info("GET 저장한 식당 목록 조회: user-{}", username);
+        PlaceListResponse response = placeManager.getMyBookmarkedPlaces(username);
         return ApiResponse.success(response, "저장한 식당 목록 조회 성공");
     }
 
     // 식당 저장 취소
     @DeleteMapping("/{placeId}/bookmarked")
     public ApiResponse<Void> deleteBookmarkedPlace(
-            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @AuthenticationPrincipal CustomOAuth2User oAuth2User,
             @PathVariable String placeId) {
-        User user = customUserDetails.user();
-        log.info("DELETE 식당 저장 취소: user-{}, place-{}", user.getId(), placeId);
-        placeManager.deleteBookmarkedPlace(user, placeId);
+        String username = oAuth2User.getName();
+        log.info("DELETE 식당 저장 취소: user-{}, place-{}", username, placeId);
+        placeManager.deleteBookmarkedPlace(username, placeId);
         return ApiResponse.noContent("식당 저장 취소 성공");
     }
 }
