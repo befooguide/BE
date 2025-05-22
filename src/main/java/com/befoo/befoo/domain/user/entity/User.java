@@ -31,6 +31,7 @@ public class User extends BaseTime {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @Column(unique = true)
     private String nickname;
 
     private String image;

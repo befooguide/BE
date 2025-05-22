@@ -21,6 +21,7 @@ public class UserProfileResponse implements Response {
     private String nickname;
     private List<String> healthConditions;
     private List<String> allergies;
+    private boolean hasHealthInfo;
 
     public static UserProfileResponse from(User user) {
         return UserProfileResponse.builder()
@@ -37,6 +38,7 @@ public class UserProfileResponse implements Response {
                         .map(Allergy::getDescription)
                         .collect(Collectors.toList()) : 
                         List.of())
+                .hasHealthInfo(user.getHealthConditions() != null && user.getHealthConditions() != null)
                 .build();
     }
 } 
